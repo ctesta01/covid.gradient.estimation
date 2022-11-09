@@ -1,0 +1,196 @@
+---
+title: Analyzing COVID-19 Mortality at the County Level in the U.S. Using Generalized Additive
+  Models
+author: "Christian Testa"
+date: '`r Sys.Date()`'
+output: pdf_document
+abstract: this is an abstract
+---
+
+```{r setup, echo = FALSE}
+library(here)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  out.width = '100%'
+)
+```
+
+# Introduction
+
+As we enter the third winter with novel coronavirus disease (COVID-19) in the
+United States (U.S.), evidence reflecting intense disparities in COVID-19 mortality rates 
+among socially advantaged and disadvantaged populations persists.  Eliminating
+inequities in health outcomes is a major policy goal of the Biden
+administration, representing an revitalized focus on health justice
+and underlining the importance of adequate data reporting systems that measure
+the prevalent health inequities.  To this end, generalized additive models
+(GAMs) provide a flexible regression framework which can illustrate the evolving
+roles and relationships social conditions have with trends in COVID-19
+mortality.
+
+# Background
+
+Having passed over 1 million COVID-19 deaths in the United States earlier this
+year, and facing uncertain prospects for the third COVID-19 winter looming even
+as new iterations on the COVID-19 vaccines become available, it remains critical
+that inequities in COVID-19 outcomes are documented and analyzed to reckon with
+the unjust and unfair burden of preventable illness.  Even though the first
+vaccines were granted emergency use authorization by the U.S. Food and Drug
+Administration in 2020, with the first shots going in arms in December 2020,
+COVID-19 is still continuing to cause hundreds of deaths a day in the U.S. in
+the late summer and early fall of 2022.  The new bivalent vaccines released at
+the end of August 2022 contain messenger RNA components of the original strain
+as well as the BA.4 and BA.5 lineages in an effort to make the nation's immunity
+more up-to-date and robust against the myriad of phylogenetic directions the
+COVID-19 virus is exploring.  Despite the updated bivalent boosters representing
+a significant step forward in prevention strategy, less than 4% of eligible
+Americans had taken the booster in the first month after it became available. As
+such, and with an enduring history of inequities in health care availability, it
+is not clear that all communities will be equally able to take advantage of the
+new vaccines and inequities in COVID-19 illness and mortality may persist
+despite the technological innovations in vaccine therapy.
+
+```{r figure 1, fig.cap = "Monthly estimates of COVID-19 mortality per 100,000 residents by state are shown.  States are in distinct colors to make each state's trajectory visible. Reference the online version TODO: XXX"}
+knitr::include_graphics(here("analysis/01_state_trajectories/state_covid19_mortality_trajectories.png"))
+```
+
+# Methods
+
+## Data Sources 
+
+The following variables were retrieved at the county level: 
+
+  * Counts of deaths by month with underlying cause of death as
+  COVID-19 (ICD-10 code U07.1) from CDC WONDER, Provisional Multiple Cause of Death
+  Data
+  * Population Size Estimates for 2020 from the U.S. Census (Redistricting 
+  File Public-Law 94-171 Dataset). *Note:*  While the complete data for the 2020
+  U.S. Census have not yet been released, the summary tables including
+  population counts have been released as mandated by Congress for the purposes
+  of redistricting and updating the boundaries of the 435 voting Congressional
+  Districts, which are what is made us of here as population size estimates.
+  * Percent Black, percent Hispanic, percent Asian, percent American Indian or
+  Alaska Native, Percent below the federal poverty line, median household
+  income, median age, percent 65 years or older, and percent 75 years or older
+  from the 2014-2019 5-year American Community Survey. 
+  *Note:* while more recent American Community Survey 5-year estimates are
+  available, survey data collection in 2020 was severely affected by the
+  pandemic with the 2020 data release denoted as "experimental".
+
+## Generalized Additive Models 
+
+# Results
+
+We used GAMs to describe the following: 
+
+  * the changing associations between individual area-based measures
+  and COVID-19 mortality over time;
+  * the changing associations between bivariate area-based measures
+  and COVID-19 mortality over time; 
+  * associations with area-based measures and COVID-19 mortality after
+  controlling for spatio-temporal autocorrelation. 
+
+Additionally, as sensitivity analyses, random forest models were fit to compare
+with the coefficient estimates from the GAMs.
+
+# Discussion
+
+
+## Limitations
+
+  * Missing data 
+  * Ecological fallacy 
+  * Age effects
+  * Fixed population denominators -> real-time denominator estimates
+  * Vaccination and mobility effects
+
+# Conclusions
+
+
+# References
+
+
+<!-- 1 million covid deaths: 
+https://coronavirus.jhu.edu/from-our-experts/u-s-officially-surpasses-1-million-covid-19-deaths --> 
+
+
+<!-- nearly 225,000 Americans have died since the start of 2022
+https://abcnews.go.com/Health/225000-americans-died-covid-19-start-2022-viral/story?id=90339579 --> 
+
+
+<!-- 
+vaccine timeline
+https://www.mayoclinic.org/coronavirus-covid-19/history-disease-outbreaks-vaccine-timeline/covid-19
+--> 
+
+
+<!--
+less than 4% of americans had gotten the booster 1 month into availability
+https://www.nbcnews.com/health/health-news/updated-covid-booster-shots-doses-administered-cdc-rcna48960
+--> 
+
+<!-- 2020 ACS data are experimental 
+https://www.census.gov/newsroom/press-releases/2021/experimental-2020-acs-1-year-data.html --> 
+
+
+<!--
+Spatial-temporal generalized additive model for modeling COVID-19 mortality risk in Toronto, Canada
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8257405/ --> 
+
+<!-- 
+Using GAM functions and Markov-Switching models in an evaluation framework to assess countries’ performance in controlling the COVID-19 pandemic
+https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-021-11891-6 --> 
+
+<!--
+Statistical modelling of COVID-19 data: Putting generalized additive models to work
+https://journals.sagepub.com/doi/full/10.1177/1471082X221124628
+--> 
+
+<!--
+Inference following multiple imputation for generalized additive models: an investigation of the median p-value rule with applications to the Pulmonary Hypertension Association Registry and Colorado COVID-19 hospitalization data
+https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-022-01613-w
+-->
+
+<!--
+Generalized Additive Models to Capture the Death Rates in Canada COVID-19
+https://link.springer.com/chapter/10.1007/978-3-030-85053-1_7 --> 
+
+<!--
+Contribution of Two-Dose Vaccination Toward the Reduction of COVID-19 Cases, ICU Hospitalizations and Deaths in Chile Assessed Through Explanatory Generalized Additive Models for Location, Scale, and Shape
+https://www.frontiersin.org/articles/10.3389/fpubh.2022.815036/full --> 
+
+<!-- 
+Combining graph neural networks and spatio-temporal disease models to improve the prediction of weekly COVID-19 cases in Germany
+https://www.nature.com/articles/s41598-022-07757-5 --> 
+
+<!-- 
+Association between mobility patterns and COVID-19 transmission in the USA: a mathematical modelling study
+https://www.sciencedirect.com/science/article/pii/S1473309920305533 --> 
+
+<!-- 
+Examining spatiotemporal evolution of racial/ethnic disparities in human mobility and COVID-19 health outcomes: Evidence from the contiguous United States
+https://www.sciencedirect.com/science/article/pii/S2210670721007721 --> 
+
+<!--
+Social, economic, and environmental factors influencing the basic reproduction number of COVID-19 across countries
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0252373 --> 
+
+
+<!-- 
+https://asbates.rbind.io/2019/05/03/gams-for-time-series/
+--> 
+
+<!--
+https://environmentalcomputing.net/statistics/gams/
+--> 
+
+<!--
+https://petolau.github.io/Analyzing-double-seasonal-time-series-with-GAM-in-R/
+--> 
+
+# Supplementary Materials 
+
+

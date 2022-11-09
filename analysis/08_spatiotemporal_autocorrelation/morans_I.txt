@@ -1,0 +1,12 @@
+> spdep::moran(
++   x = df_jan2021_no_NAs$crude_rate_per_100k_py,
++   listw = nb2listw(nb_q, zero.policy = TRUE),
++   zero.policy = TRUE,
++   n = nrow(df_jan2021_no_NAs),
++   S0 = Szero(nb2listw(nb_q, zero.policy = TRUE))
++ )
+$I
+[1] 0.217454
+
+$K
+[1] 26.11371
