@@ -9,6 +9,7 @@ library(spdep)
 library(sf)
 library(gtable)
 library(grid)
+library(cowplot)
 
 
 # load analytic dataset
@@ -359,7 +360,7 @@ vis.gam(
   type = 'response',
   ticktype = "detailed",
   color = "topo",
-  main = "Interaction of Population Density and Time Without\nAdjusting for Spatiotemporal Autocorrelation",
+  main = "Interaction of Political Lean and Time Without\nAdjusting for Spatiotemporal Autocorrelation",
   ylab = '\n\nPolitical Lean',
   xlab = '\n\nDate in Years',
   nticks = 4
@@ -388,7 +389,7 @@ vis.gam(
   type = 'response',
   ticktype = "detailed",
   color = "topo",
-  main = "Interaction of Population Density and Time After\nAdjusting for Spatiotemporal Autocorrelation",
+  main = "Interaction of Political Lean and Time After\nAdjusting for Spatiotemporal Autocorrelation",
   ylab = '\n\nPolitical Lean',
   xlab = '\n\nDate in Years',
   nticks = 4
@@ -427,6 +428,25 @@ dev.off()
 
 
 
+# make composite images ---------------------------------------------------
+
+plot_grid(
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/log_pop_density_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_age_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_income_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/ICEraceinc_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/political_lean_and_time_no_spatiotemporal.png")),
+
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/log_pop_density_and_time.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_age_and_time.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_income_and_time.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/ICEraceinc_and_time.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/political_lean_and_time.png")),
+
+  labels = 'AUTO',
+  nrow = 2
+)
 
 
 

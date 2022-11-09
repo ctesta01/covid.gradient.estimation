@@ -106,6 +106,10 @@ Finally, the manuscript is produced in the `manuscript/` directory.
 
 ![animation of the spread of COVID-19 using spatiotemporal smoothing via generalized additive models](analysis/09_spatiotemporal_models/animation/spatiotemporal_animation_with_pause.gif)
 
+### Effects Associated with Covariates Before and After Adjusting for Spatiotemporal Autocorrelation
+
+![figure showing covariate effects over time without adjusting for spatiotemporal autocorrelation in the top row and with adjustment for spatiotemporal autocorrelation in the bottom row](analysis/09_spatiotemporal_models/panel_figure.png)
+
 ## Software Dependencies
 
 This project uses `renv` to manage dependencies so that the analyses can be 
