@@ -52,7 +52,7 @@ inst
     └── us-counties-2022.csv
 ```
 
-Finally, most of the analysis work and figure generation is done in the `analysis/`
+The analysis work and figure generation is done in the `analysis/`
 directory, where discrete analytic tasks are organized by directories numbered in 
 the order of analysis steps. 
 
@@ -74,6 +74,8 @@ analysis
 └── 08_spatiotemporal_autocorrelation
 ```
 
+Finally, the manuscript is produced in the `manuscript/` directory.
+
 ## Background 
 
 ![a timeseries figure showing the state trajectories of COVID-19 in the United States](analysis/01_state_trajectories/state_covid19_mortality_trajectories.png)
@@ -90,9 +92,19 @@ analysis
 
 ## Results 
 
+### Non-Spatial GAMs 
+
 ![effect of income and time visualized using a GAM](analysis/04_one_variable_over_time/income_and_time.png)
 
 ![effect of ICEraceinc and age over time visualized using a GAM](analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/animation_with_pause.gif)
+
+### Illustrating Spatial Smoothing 
+
+![map showing crude covid-19 mortality rates from January 2021](analysis/08_spatiotemporal_autocorrelation/crude_mortality_map_january2022.png)
+
+![map showing smoothed mortality rates from january 2021](analysis/08_spatiotemporal_autocorrelation/smoothed_mortality_map_january2022.png)
+
+![animation of the spread of COVID-19 using spatiotemporal smoothing via generalized additive models](analysis/09_spatiotemporal_models/animation/spatiotemporal_animation_with_pause.gif)
 
 ## Software Dependencies
 

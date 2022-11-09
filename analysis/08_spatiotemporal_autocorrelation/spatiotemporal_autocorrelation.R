@@ -394,14 +394,6 @@ ggplot({county_map %>% left_join(
     filter(! state_abbv %in% c('AK', 'HI')) %>%
     sf::st_transform(crs = "EPSG:2163"), aes(fill = predictions)) +
   geom_sf(size = 0) +
-  # scale_fill_distiller(
-  #   palette = 'Oranges',
-  #   breaks = c(0, 100, 500, 1000),
-  #   direction = 1,
-  #   trans = scales::sqrt_trans(),
-  #   limits = c(0, 500),
-  #   oob = scales::squish
-  # ) +
   scale_fill_viridis_c(
     option = 'turbo',
     direction = 1,
