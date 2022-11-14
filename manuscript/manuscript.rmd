@@ -1,14 +1,87 @@
 ---
-title: Analyzing COVID-19 Mortality at the County Level in the U.S. Using Generalized Additive
-  Models
-author: "Christian Testa"
-date: '`r Sys.Date()`'
-output: pdf_document
-abstract: this is an abstract
+title: Documenting Social, Geographic, and Economic Inequities in COVID-19 Mortality at the County Level in the US Using Generalized Additive Models
+author: 
+  - name: "Christian Testa"
+    institute: "1"
+    email: "ctesta@hsph.harvard.edu"
+    correspondence: true
+institute: 
+  - "1": "Department of Social and Behavioral Sciences, Harvard T.H. Chan School of Public Health"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  bookdown::pdf_document2:
+    pandoc_args:
+      - '--lua-filter=scholarly-metadata.lua'
+      - '--lua-filter=author-info-blocks.lua'
+    toc: false
+    number_sections: false
+abstract: |
+  We present three types of applications of generalized additive models (GAMs) to
+  COVID-19 mortality rates in the US for the purpose of advancing methods to
+  document inequities with respect to which communities suffered disproportionate
+  COVID-19 mortality rates. First, GAMs can be used to describe the changing
+  relationship between COVID-19 mortality and county-level covariates
+  (sociodemographic, economic, and political metrics) over time. Second, GAMs can
+  be used to perform spatiotemporal smoothing that pools information over time and
+  space so that county level mortality rates that tend to be noisy due to small
+  population counts or stochasticity can be summarized by a smooth, dynamic latent
+  surface describing the mortality risk associated with geographic locations over
+  time. Third, estimation of the associations between county-level covariates and
+  COVID-19 mortality after controlling for spatiotemporal effects allow for the
+  distinguishing of what patterns in COVID-19 mortality were more plausibly due to
+  geography than variation in county-level covariates. Each of these approaches
+  provides a valuable approach and perspective to documenting inequities in
+  COVID-19 mortality by addressing the question of which populations have suffered
+  the worst burden of COVID-19 mortality taking into account the nonlinear
+  spatial, temporal, and social patterning of disease.
+  \newline 
+  
+  \noindent Abbreviations used: United States (US), Coronavirus Disease 2019 (COVID-19), Generalized
+  Additive Model (GAM), Centers for Disease Control and Prevention (CDC)
+bibliography: bibliography.bib
+csl: apa.csl
+link-citations: true
+urlcolor: blue
+linkcolor: black
 ---
 
+<!--
+TODO: 
+
+Throughout/Overarching: 
+  - Do I need to update all the models to separately control for age? Probably.
+  - Do I want to have a supplementary materials section?
+  - Talk about ecosocial theory (?) (Who benefits from harm done to whom?)
+
+Abstract:
+  - Add link to GitHub repository
+
+Intro: 
+  - add geographic background, like where the first cases were reported, 
+  how COVID exploded in NYC, then the surges in the Midwest and South
+  - add a primer on the relevance of spatiotemporal modeling
+  
+
+Methods: 
+  - add intro to ICEraceinc (methods)
+  - describe negative binomial models
+  
+Results:
+  - add figure for temporal two-way interaction effects
+  - present rate ratios (results)
+  - present model comparisons (results, F-tests, AIC)
+
+Discussion:
+  - talk about how COVID has not been a win for health equity (discussion)
+  - talk about limitations to being causal
+  - talk about future directions
+
+Conclusion:
+  - summarize
+--> 
+
 ```{r setup, echo = FALSE}
-library(here)
+suppressMessages(library(here))
 
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -20,42 +93,174 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-As we enter the third winter with novel coronavirus disease (COVID-19) in the
-United States (U.S.), evidence reflecting intense disparities in COVID-19 mortality rates 
-among socially advantaged and disadvantaged populations persists.  Eliminating
-inequities in health outcomes is a major policy goal of the Biden
-administration, representing an revitalized focus on health justice
-and underlining the importance of adequate data reporting systems that measure
-the prevalent health inequities.  To this end, generalized additive models
-(GAMs) provide a flexible regression framework which can illustrate the evolving
-roles and relationships social conditions have with trends in COVID-19
-mortality.
+As we enter the third winter with the novel coronavirus disease 
+COVID-19 in the United States, evidence documenting the intense disparities in
+COVID-19 mortality rates comparing socially advantaged and disadvantaged
+populations continues to mount. Eliminating inequities in health outcomes has
+been stated as a major policy goal of the Biden administration
+[@the_white_house_executive_2021; @the_white_house_advancing_2022], representing
+a revitalized focus on health justice and underlining the importance of adequate
+data reporting systems that measure the prevalent health inequities. To this
+end, we use generalized additive models (GAMs) as a flexible regression
+framework to illustrate the evolving roles and relationships sociodemographic,
+geographic, and economic conditions have with respect to trends in COVID-19
+mortality. The code, data, and documentation necessary to reproduce the analyses
+contained in this paper are online and free to access at <https://github.com/ctesta01/covid.gradient.estimation>.
 
-# Background
+### Background
 
 Having passed over 1 million COVID-19 deaths in the United States earlier this
-year, and facing uncertain prospects for the third COVID-19 winter looming even
-as new iterations on the COVID-19 vaccines become available, it remains critical
-that inequities in COVID-19 outcomes are documented and analyzed to reckon with
-the unjust and unfair burden of preventable illness.  Even though the first
-vaccines were granted emergency use authorization by the U.S. Food and Drug
-Administration in 2020, with the first shots going in arms in December 2020,
-COVID-19 is still continuing to cause hundreds of deaths a day in the U.S. in
-the late summer and early fall of 2022.  The new bivalent vaccines released at
-the end of August 2022 contain messenger RNA components of the original strain
-as well as the BA.4 and BA.5 lineages in an effort to make the nation's immunity
-more up-to-date and robust against the myriad of phylogenetic directions the
-COVID-19 virus is exploring.  Despite the updated bivalent boosters representing
-a significant step forward in prevention strategy, less than 4% of eligible
-Americans had taken the booster in the first month after it became available. As
-such, and with an enduring history of inequities in health care availability, it
-is not clear that all communities will be equally able to take advantage of the
-new vaccines and inequities in COVID-19 illness and mortality may persist
-despite the technological innovations in vaccine therapy.
+year [@donovan_us_2022], and facing uncertain prospects for the third COVID-19
+winter looming even as new iterations on the COVID-19 vaccines become available,
+it remains critical that inequities in COVID-19 outcomes are documented and
+analyzed to reckon with the unjust and unfair burden of preventable illness.
+Even though the first vaccines were granted emergency use authorization by the
+U.S. Food and Drug Administration in 2020 [@mayo_clinic_history_2022], with the
+first shots going in arms in December 2020, COVID-19 is still continuing to
+cause hundreds of deaths a day in the US in the fall of 2022
+[@noauthor_united_2022].  The new bivalent vaccines released at the end of
+August 2022 contain mRNA sequences from both the original strain as well as
+the recently emergent BA.4 and BA.5 lineages in an effort to make the nation's immunity more
+up-to-date and robust against the myriad of phylogenetic directions the COVID-19
+virus is evolving to explore [@office_of_the_commissioner_coronavirus_2022].
+Despite the updated bivalent boosters representing a significant step forward in
+prevention strategy, less than 4% of eligible Americans had taken the booster in
+the first month after it became available [@bendix_less_2022; @lambert_most_2022]. 
+As such, and with an enduring history of inequities in health care access 
+in the US [@ortega_ending_2021; @blendon_inequities_2002; @bailey_how_2021;
+@okonkwo_covid-19_2021; @rapp_statelevel_2022;
+@chrisler_ageism_2016; @feldman_health_2021; @carpenter_health_2021;
+@whitehead_outness_2016], it is clear that without further intervention not all
+communities will be equally able to benefit from the updated vaccines and
+inequities in COVID-19 illness and mortality may persist despite the
+technological innovations in vaccine technology.
 
-```{r figure 1, fig.cap = "Monthly estimates of COVID-19 mortality per 100,000 residents by state are shown.  States are in distinct colors to make each state's trajectory visible. Reference the online version TODO: XXX"}
-knitr::include_graphics(here("analysis/01_state_trajectories/state_covid19_mortality_trajectories.png"))
+### The Role of Geography in COVID-19 
+
+```{r figure-county-trends, fig.cap = "Estimates of monthly COVID-19 mortality rates per 100,000 person-years by county organized by Census Division.  For each division, the median trendline and quantile ranges are shown weighted by county population size.", out.width = "6in", fig.align = 'center', fig.env = "figure*"}
+knitr::include_graphics(here("analysis/02_plot_county_trends/county_trends_by_division.png"))
 ```
+
+Prior literature has demonstrated that geography has played a significant role
+in the spread and impact of of COVID-19. Methods employed to highlight the role
+geography plays have included quantile regression [@sigler_socio-spatial_2021],
+Besag-York-Molli\'e mixed models [@whittle_ecological_2020], spatial cluster analysis
+[@sugg_mapping_2021], geographically weighted regression [@mollalo_gis-based_2020; @park_covid-19_2021], and others. 
+
+In the US context, one of the key aspects to the geographic story of COVID-19's
+spread and diffusion was the early surge of cases and epicenter in New York City
+during March 2020 [@thompson_covid-19_2020] followed by subsequent waves of cases in the
+South and Midwest [@shumaker_covid-19_2020; @scott_these_2020; @glenza_covid_2020]. As Park et al. 
+stated in their article *COVID-19 Deaths in the United States: Shifts in Hot Spots over the Three Phases of the Pandemic and the Spatiotemporally Varying Impact of Pandemic Vulnerability* where they summarized
+US trends from March 2020 to May 2021, "hot spots have shifted from densely populated cities and the states with a high percentage of socially vulnerable individuals to the states with relatively relaxed social distancing requirements, and then to the states with low vaccination rates" [@park_covid-19_2021]. 
+
+When considering the drivers of the COVID-19 pandemic, it's necessary to note that 
+geography and social conditions are inextricably linked. In July 2021, the CDC
+reported that "the COVID-19 cumulative death rate in non-metropolitan areas has
+exceeded that of metropolitan areas since December 2020," noting that of the
+approximately 1/5th of Americans who live in rural areas, many "are considered
+highly vulnerable according to CDC’s Social Vulnerability Index (SVI), which
+includes factors such as housing, transportation, socioeconomic status, race,
+and ethnicity" [@cdc_location_2021]. Moreover, rural communities often have
+lower health insurance rates, higher disability rates, older populations, and
+limited access to health care. One of CDC's Morbidity and Mortality Weekly
+Reports found that vaccination against COVID-19 was lower in rural communities
+than in urban communities between December 2020 and April 2021
+[@murthy_disparities_2021].
+
+Figure \@ref(fig:figure-county-trends) shows the monthly COVID-19 mortality
+rates for the counties grouped within each of the nine U.S. Census Divisions
+[@us_department_of_commerce_economics_and_statistics_administration_census_2000]. 
+The figure summarizes each division's median mortality rates
+weighted by county population size. Quantile ranges are included to illustrate
+the range of mortality rates observed, again weighted by county population size.
+Weighting based on county population size is used as opposed to equal weighting
+for calculating the median and quantile ranges so that in divisions where low
+population counties predominate, mortality rate estimates that are noisy due to
+small population counts are not weighted equally to more reliable mortality rate
+estimates from larger population counties. Notably, the mortality associated
+with the early surge of cases starting in NYC and spreading through New York,
+New Jersey, and Massachusetts is visible in the Middle Atlantic and New England
+division figures. The figure also illustrates how the first peak in the
+mortality time-series for states in the Midwest (West North Central, East North
+Central) occurred later, in late 2020 and going into early 2021.
+
+
+### The Social Determinants of COVID-19 Mortality
+
+<!-- 
+Want to cite: 
+* Mude et al (racial disparities meta-analysis);
+* Chen & Krieger on their article "Revealing the Unequal Burden" 
+* Hanage et al COVID-19: US federal accountability for entry, spread and inequities
+* Kim et al on COVID-19 magnifying the effect of health disparities (esp. re: testing (re: care providers, transportation equity))
+* Romano et al (CDC MMWR on trends and disparities in hospitalizations by race/ethnicity and region)
+* Okonkwo et al: accelerating health inequities
+* Del Rios: COVID-19 is an inverse equity story, not a racial equity success story
+* Goldstein/NYT: During the Omicron surge, Black New Yorkers were hospitalized at a rate more than twice that of white residents.
+* Mueller/NYT In Rural America, Covid Hits Black and Hispanic People Hardest
+* Hill et al / KFF COVID-19 Cases and Deaths by Race/Ethnicity: Current Data and Changes Over Time
+* Lo et al The polarization of politics and public opinion and their effects on racial inequality in COVID mortality
+* Johnson and Keating: Whites now more likely to die from covid than Blacks: Why the pandemic shifted 
+* Kaashoek The Evolving Roles of US Political Partisanship and Social Vulnerability in the COVID-19 Pandemic from February 2020 - February 2021
+* 
+* Krieger et al on a warning against static measures
+
+Outline: 
+
+Disparities became immediately obvious: 
+  Though many have repeated the oft-quoted line "viruses do not discriminate,"
+  it was immediately clear that COVID-19 would lay bare the sharp inequities
+  that exist in tge US; almost immediately some groups were shown to be
+  experiencing higher rates of COVID-19 infection and mortality. Those groups
+  have been shown to include marginalized racial/ethnic groups, those who do not
+  speak English, transportation insecurity, the elderly, those exposed to
+  chronic pollution, those living in crowded housing or areas with financial
+  insecurity, and those with disabilities, housing instability and/or
+  homelessness, pre-existing conditions (including chronic obstructive pulmonary
+  disease, diabetes, heart diseases, etc.).  Smoking.  Obesity.  Acute Kidney
+  Injury.
+
+There are some aspects of this story that we still don't know: 
+  The details on COVID-19 rates are not availability stratified by both disability
+  and race/ethnicity simultaneously making it difficult to understand how much of
+  racial/ethnic disparities in COVID-19 are attributable to increased disability
+  rates among historically (and even now) marginalized racial/ethnic groups.
+  
+  Moreover, it is known that many of the risk factors for increased COVID-19 severity 
+  are prevalent at increased rates among sexual minority persons compared to heterosexual
+  persons, suggesting that sexual minority persons may be at increased risk of 
+  severe COVID-19. 
+  
+Vaccines didn't right the boat: 
+  Again, when vaccines became available, I think many thought "surely this will
+  be the silver bullet that solves the problem";  inequities in who were able to
+  get vaccine appointments reinforced existing patterns in internet access,
+  technological literacy and availability of transportation. Even after the
+  initial vaccine rollout, inequities persist in vaccination clinic locations
+  with 'vaccine deserts' being more likely to be located in less affluent, less 
+  white communities. 
+  
+Throughout this timeline, it has become increasingly apparent that local-level
+politics represents a critical factor influencing the trajectory of COVID-19. 
+  
+COVID is not a racial equity success story: 
+  Finally, racial inequities in COVID-19 in the US have been widening and
+  shrinking during the course of the pandemic, largely widening during surges
+  and shrinking when case rates and mortality have been lower.  During Fall 
+  2022, the age-adjusted COVID-19 mortality rate for white non-Hispanic 
+  people surpassed the mortality rate for Black or African/American people. 
+  This has been explained as being due to those who still remain unvaccinated
+  being more likely to be Republican and white. While reducing racial inequities
+  in COVID-19 mortality rates during Fall 2022, may sound like a good thing, the
+  cumulative burden of COVID-19 leaving in its wake long-COVID, lost loved ones,
+  jobs lost, and damage to individuals' health that may never be reversed that
+  disproportionately falls on marginalized racial/ethnic groups does not
+  represent a health equity success story.
+-->
+
+  - Insert section on prior modeling results
+  - Insert discussion motivating the need for spatiotemporal modeling
 
 # Methods
 
@@ -63,26 +268,52 @@ knitr::include_graphics(here("analysis/01_state_trajectories/state_covid19_morta
 
 The following variables were retrieved at the county level: 
 
-  * Counts of deaths by month with underlying cause of death as
-  COVID-19 (ICD-10 code U07.1) from CDC WONDER, Provisional Multiple Cause of Death
-  Data
-  * Population Size Estimates for 2020 from the U.S. Census (Redistricting 
-  File Public-Law 94-171 Dataset). *Note:*  While the complete data for the 2020
-  U.S. Census have not yet been released, the summary tables including
-  population counts have been released as mandated by Congress for the purposes
-  of redistricting and updating the boundaries of the 435 voting Congressional
-  Districts, which are what is made us of here as population size estimates.
-  * Percent Black, percent Hispanic, percent Asian, percent American Indian or
-  Alaska Native, Percent below the federal poverty line, median household
-  income, median age, percent 65 years or older, and percent 75 years or older
-  from the 2014-2019 5-year American Community Survey. 
-  *Note:* while more recent American Community Survey 5-year estimates are
-  available, survey data collection in 2020 was severely affected by the
-  pandemic with the 2020 data release denoted as "experimental".
+  * Counts of COVID-19 deaths [@the_new_york_times_coronavirus_2021].
+  * Population size estimates for 2020 from the U.S. Census (Redistricting 
+  File Public-Law 94-171 Dataset) [@us_census_bureau_2020_2021].
+  * Median age, median household income, racial/ethnic composition, population
+  density, percent below the federal poverty line, and number of households with
+  high (\$100k+)/low (<\$25k) household income by racial/ethnic group from the
+  2014-2019 5-year American Community Survey [@us_census_bureau_american_2020]
+  through the `tidyverse` R package [@walker_tidycensus_2022]. 
+  * Votes cast in the 2020 presidential election [@mit_county_2022]
+  
+## Generalized Additive Models
 
-## Generalized Additive Models 
+Traditional generalized linear models fit a regression model 
+using the functional relation $g(\mu_i) = \mathbf X_i \beta$ 
+where 
+Examples of common link functions include the identity function for linear regression,
+$\log$ for Poisson regression, and the $\text{logit}$ function for logistic regression. 
+
+Generalized additive models (GAMs) improve upon generalized linear models by
+allowing for the fitting of smooth functions that transform the $x$ variables.
+This is a convenient means to include nonlinear relationships between the
+outcome and predictor variables. Whereas a generalized linear model may have looked like 
+$$ g(\mu_i) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} ...$$ 
+a generalized additive model could look like 
+$$ g(\mu_i) = \mathbf A_i \mathbf \theta + f_1(x_{i1}) + f_2(x_{i2}) + f_3(x_{i3}, x_{i4}) + \dots$$
+where $\mu_i \equiv \mathbb E(Y_i)$, $\mathbf A_i$ is a row of the model matrix 
+for any strictly non-parametric model components, $\mathbf \theta$ is the corresponding
+parameter vector, and the $f_j$ are smooth functions of the covariates $x_k$ [@wood_generalized_2017]. 
+
 
 # Results
+
+## Evaluating Spatial and Temporal Autocorrelation
+
+```{r figure county neighboring graph, fig.cap = "A) The spatial neighbor graph for counties in the US. In this graph, county centroids are connected if the two counties are adjacent to one another (i.e., share a boundary). This and similar graphs that represent neighbor relationships or geographic proximity are often used in modeling contexts to create spatial weights that account for which regions help to explain a given region's observed data.", fig.show='hold', out.width = '50%', fig.env = "figure*"} 
+desired_caption <- 
+  " B) Moran's scatter plot \\citep{anselin_simple_1996} depicts for each region (in our case, counties) on the x-axis the region rate and on the y-axis the average of the region's neighbors' rates. This diagnostic plot provides a simple means to assess to what degree neighboring regions share similar rates. In a setting where regions have high correlation, Moran's scatter plot will exhibit a high degree of positive correlation."
+knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/county_neighboring_relations.png")) 
+knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/morans_plot.png"))
+```
+
+```{r figure 4, fig.cap = ""}
+knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/temporal_acf.png"))
+```
+
+## Regression Modeling Results
 
 We used GAMs to describe the following: 
 
@@ -95,6 +326,14 @@ We used GAMs to describe the following:
 
 Additionally, as sensitivity analyses, random forest models were fit to compare
 with the coefficient estimates from the GAMs.
+
+```{r figure 5, fig.cap = ""}
+knitr::include_graphics(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"))
+```
+
+```{r figure 6, fig.cap = ""}
+knitr::include_graphics(here("analysis/09_spatiotemporal_models/panel_figure.png"))
+```
 
 # Discussion
 
@@ -111,7 +350,6 @@ with the coefficient estimates from the GAMs.
 
 
 # References
-
 
 <!-- 1 million covid deaths: 
 https://coronavirus.jhu.edu/from-our-experts/u-s-officially-surpasses-1-million-covid-19-deaths --> 
@@ -190,7 +428,4 @@ https://environmentalcomputing.net/statistics/gams/
 <!--
 https://petolau.github.io/Analyzing-double-seasonal-time-series-with-GAM-in-R/
 --> 
-
-# Supplementary Materials 
-
 
