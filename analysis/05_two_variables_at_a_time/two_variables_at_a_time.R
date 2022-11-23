@@ -107,3 +107,19 @@ setwd(here("analysis/05_two_variables_at_a_time/animation_income_age/"))
 # use imagemagick to create a gif
 system("convert -delay 40 -loop 0 *.png income_age_animation.gif \( +clone -set delay 500 \) +swap +delete animation_with_pause.gif")
 
+
+# Panel figure
+plot_grid(
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/03.png")),
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/09.png")),
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/15.png")),
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/20.png")),
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/24.png")),
+  ggdraw() + draw_image(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/30.png")),
+
+  labels = 'AUTO',
+  nrow = 2
+)
+
+ggsave(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/panel_figure.png"), width = 8, height = 5.5, bg='white')
+

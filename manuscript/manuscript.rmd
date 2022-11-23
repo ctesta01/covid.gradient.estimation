@@ -43,6 +43,10 @@ csl: apa.csl
 link-citations: true
 urlcolor: blue
 linkcolor: black
+header-includes: 
+  - \usepackage{pdflscape}
+  - \newcommand{\blandscape}{\begin{landscape}}
+  - \newcommand{\elandscape}{\end{landscape}}
 ---
 
 <!--
@@ -147,27 +151,6 @@ geography plays have included quantile regression [@sigler_socio-spatial_2021],
 Besag-York-Molli\'e mixed models [@whittle_ecological_2020], spatial cluster analysis
 [@sugg_mapping_2021], geographically weighted regression [@mollalo_gis-based_2020; @park_covid-19_2021], and others. 
 
-In the US context, one of the key aspects to the geographic story of COVID-19's
-spread and diffusion was the early surge of cases and epicenter in New York City
-during March 2020 [@thompson_covid-19_2020] followed by subsequent waves of cases in the
-South and Midwest [@shumaker_covid-19_2020; @scott_these_2020; @glenza_covid_2020]. As Park et al. 
-stated in their article *COVID-19 Deaths in the United States: Shifts in Hot Spots over the Three Phases of the Pandemic and the Spatiotemporally Varying Impact of Pandemic Vulnerability* where they summarized
-US trends from March 2020 to May 2021, "hot spots have shifted from densely populated cities and the states with a high percentage of socially vulnerable individuals to the states with relatively relaxed social distancing requirements, and then to the states with low vaccination rates" [@park_covid-19_2021]. 
-
-When considering the drivers of the COVID-19 pandemic, it's necessary to note that 
-geography and social conditions are inextricably linked. In July 2021, the CDC
-reported that "the COVID-19 cumulative death rate in non-metropolitan areas has
-exceeded that of metropolitan areas since December 2020," noting that of the
-approximately 1/5th of Americans who live in rural areas, many "are considered
-highly vulnerable according to CDC’s Social Vulnerability Index (SVI), which
-includes factors such as housing, transportation, socioeconomic status, race,
-and ethnicity" [@cdc_location_2021]. Moreover, rural communities often have
-lower health insurance rates, higher disability rates, older populations, and
-limited access to health care. One of CDC's Morbidity and Mortality Weekly
-Reports found that vaccination against COVID-19 was lower in rural communities
-than in urban communities between December 2020 and April 2021
-[@murthy_disparities_2021].
-
 Figure \@ref(fig:figure-county-trends) shows the monthly COVID-19 mortality
 rates for the counties grouped within each of the nine U.S. Census Divisions
 [@us_department_of_commerce_economics_and_statistics_administration_census_2000]. 
@@ -185,82 +168,94 @@ division figures. The figure also illustrates how the first peak in the
 mortality time-series for states in the Midwest (West North Central, East North
 Central) occurred later, in late 2020 and going into early 2021.
 
+In the US context, one of the key aspects to the geographic story of COVID-19's
+spread and diffusion was the early surge of cases and epicenter in New York City
+during March 2020 [@thompson_covid-19_2020] followed by subsequent waves of cases in the
+South and Midwest [@shumaker_covid-19_2020; @scott_these_2020; @glenza_covid_2020]. As Park et al. 
+stated summarized trends in the US from March 2020 to May 2021, "hot spots have shifted from densely populated cities and the states with a high percentage of socially vulnerable individuals to the states with relatively relaxed social distancing requirements, and then to the states with low vaccination rates" [-@park_covid-19_2021]. 
+
+When considering the drivers of the COVID-19 pandemic, it's necessary to note that 
+geography and social conditions are inextricably linked. In July 2021, the CDC
+reported that "the COVID-19 cumulative death rate in non-metropolitan areas has
+exceeded that of metropolitan areas since December 2020," noting that of the
+approximately 1/5th of Americans who live in rural areas, many "are considered
+highly vulnerable according to CDC’s Social Vulnerability Index (SVI), which
+includes factors such as housing, transportation, socioeconomic status, race,
+and ethnicity" [@cdc_location_2021]. Moreover, rural communities often have
+lower health insurance rates, higher disability rates, older populations, and
+limited access to health care. One of CDC's Morbidity and Mortality Weekly
+Reports found that vaccination against COVID-19 was lower in rural communities
+than in urban communities between December 2020 and April 2021
+[@murthy_disparities_2021].
+
 
 ### The Social Determinants of COVID-19 Mortality
 
-<!-- 
-Want to cite: 
-* Mude et al (racial disparities meta-analysis);
-* Chen & Krieger on their article "Revealing the Unequal Burden" 
-* Hanage et al COVID-19: US federal accountability for entry, spread and inequities
-* Kim et al on COVID-19 magnifying the effect of health disparities (esp. re: testing (re: care providers, transportation equity))
-* Romano et al (CDC MMWR on trends and disparities in hospitalizations by race/ethnicity and region)
-* Okonkwo et al: accelerating health inequities
-* Del Rios: COVID-19 is an inverse equity story, not a racial equity success story
-* Goldstein/NYT: During the Omicron surge, Black New Yorkers were hospitalized at a rate more than twice that of white residents.
-* Mueller/NYT In Rural America, Covid Hits Black and Hispanic People Hardest
-* Hill et al / KFF COVID-19 Cases and Deaths by Race/Ethnicity: Current Data and Changes Over Time
-* Lo et al The polarization of politics and public opinion and their effects on racial inequality in COVID mortality
-* Johnson and Keating: Whites now more likely to die from covid than Blacks: Why the pandemic shifted 
-* Kaashoek The Evolving Roles of US Political Partisanship and Social Vulnerability in the COVID-19 Pandemic from February 2020 - February 2021
-* 
-* Krieger et al on a warning against static measures
+Even since the beginning of the COVID-19 outbreak in the US, data reflected
+sharp inequities in mortality rates.  During January 22nd to May 5th 2020,
+county COVID-19 mortality rates were 4.94 (95% CI 4.78, 5.09) times higher in
+counties in the highest quintile of percent People of Color (61%-100%) compared
+to counties in the lowest quintile of percent People of Color (0%-17.2%)
+[@chen_revealing_2021].  This was not wholly unanticipated: as COVID-19 was
+beginning to take off in the US, some were already calling attention to the fact
+that COVID-19 threatened to exacerbate existing disparities
+[@kim_covid-19_2020]. Kim, Marrast, and Conigliaro noted three structural
+barriers in COVID-19 prevention and care: 1) originally requiring New York
+residents to have a doctor's prescription for a COVID-19 test reduced the
+opportunity for healthcare for People of Color as they are less likely to have a
+primary care provider; 2) drive-through testing made testing disadvantaged those
+who rely on public transportation; 3) quarantining at home while waiting the
+7-10 days originally required for COVID-19 test results to come back posed an
+economic and social challenge that many in already financially difficult
+situations may not have been able to take on [-@kim_covid-19_2020]. Others noted
+yet more reasons why COVID-19 threatened to worsen an already inequitable
+healthcare landscape in the US: those who reside in prisons and jails,
+immigrants and undocumented people, people with disabilities, and people
+experiencing homeless all face additional challenges in seeking and getting the
+healthcare they deserve [@okonkwo_covid-19_2021]. It's not just a hypothetical 
+that those with more structurally enfranchised privileges have been more able to
+mitigate their risk of negative health outcomes associated with COVID-19 
+— during February 1 to April 1, 2020, New York City residents who lived in more affluent 
+neighborhoods were more likely to have left the city, while New York City residents
+from more Black and Hispanic neighborhoods were more likely to continue working [@coven_disparities_2020].
 
-Outline: 
+> Contrary to the oft used phrase that the ‘virus does not discriminate’, the
+data presented here suggest that this virus, as many other infectious diseases,
+has the greatest implications for the most vulnerable people. The intersections
+between health and human rights are clear—the health of a society and
+vulnerability to a pandemic are directly related to its human rights track
+record for those who are marginalised. [@okonkwo_covid-19_2021]
 
-Disparities became immediately obvious: 
-  Though many have repeated the oft-quoted line "viruses do not discriminate,"
-  it was immediately clear that COVID-19 would lay bare the sharp inequities
-  that exist in tge US; almost immediately some groups were shown to be
-  experiencing higher rates of COVID-19 infection and mortality. Those groups
-  have been shown to include marginalized racial/ethnic groups, those who do not
-  speak English, transportation insecurity, the elderly, those exposed to
-  chronic pollution, those living in crowded housing or areas with financial
-  insecurity, and those with disabilities, housing instability and/or
-  homelessness, pre-existing conditions (including chronic obstructive pulmonary
-  disease, diabetes, heart diseases, etc.).  Smoking.  Obesity.  Acute Kidney
-  Injury.
+When vaccines became available, vaccine appointments were often only available
+to be scheduled through online web-portals contributing to the inequities
+between those who had internet access and technological literacy and those who
+didn't [@press_inequities_2021]. Vaccination sites have not been equally
+distributed and areas determined to be vaccine deserts have been found to have
+disproportionately more Black and Hispanic residents [@rader_spatial_2021]. In
+fact, healthcare facilities in counties with higher Black composition had 32%
+(95% CI 14%-47%) lower odds of serving as vaccine sites
+[@hernandez_disparities_2022].
 
-There are some aspects of this story that we still don't know: 
-  The details on COVID-19 rates are not availability stratified by both disability
-  and race/ethnicity simultaneously making it difficult to understand how much of
-  racial/ethnic disparities in COVID-19 are attributable to increased disability
-  rates among historically (and even now) marginalized racial/ethnic groups.
-  
-  Moreover, it is known that many of the risk factors for increased COVID-19 severity 
-  are prevalent at increased rates among sexual minority persons compared to heterosexual
-  persons, suggesting that sexual minority persons may be at increased risk of 
-  severe COVID-19. 
-  
-Vaccines didn't right the boat: 
-  Again, when vaccines became available, I think many thought "surely this will
-  be the silver bullet that solves the problem";  inequities in who were able to
-  get vaccine appointments reinforced existing patterns in internet access,
-  technological literacy and availability of transportation. Even after the
-  initial vaccine rollout, inequities persist in vaccination clinic locations
-  with 'vaccine deserts' being more likely to be located in less affluent, less 
-  white communities. 
-  
-Throughout this timeline, it has become increasingly apparent that local-level
-politics represents a critical factor influencing the trajectory of COVID-19. 
-  
-COVID is not a racial equity success story: 
-  Finally, racial inequities in COVID-19 in the US have been widening and
-  shrinking during the course of the pandemic, largely widening during surges
-  and shrinking when case rates and mortality have been lower.  During Fall 
-  2022, the age-adjusted COVID-19 mortality rate for white non-Hispanic 
-  people surpassed the mortality rate for Black or African/American people. 
-  This has been explained as being due to those who still remain unvaccinated
-  being more likely to be Republican and white. While reducing racial inequities
-  in COVID-19 mortality rates during Fall 2022, may sound like a good thing, the
-  cumulative burden of COVID-19 leaving in its wake long-COVID, lost loved ones,
-  jobs lost, and damage to individuals' health that may never be reversed that
-  disproportionately falls on marginalized racial/ethnic groups does not
-  represent a health equity success story.
--->
+What vaccination has been administered hasn't suddenly erased the unequal burden
+of COVID-19 either; in August 2022 the New York Times was reporting "Black death
+rates at this winter’s peak were greater than those of white people by 34
+percent in rural areas, 40 percent in small or medium cities and 57 percent in
+big cities and their suburbs" [@goldstein_during_2022]. As COVID-19 case and
+mortality rates have waxed and waned, the inequities have widen and shrunken,
+often with racial/ethnic inequities growing during times when COVID-19 rates
+have surged [@hill_covid-19_2022]. During 2022, the age-standardized
+COVID-19 mortality rates for white people have, at times, been slightly 
+higher than those of Black and Hispanic people, predominantly because the 
+mortality rate among white people has increased [@johnson_whites_2022]. 
+It's important to note that white COVID-19 mortality rates overtaking 
+the Black mortality rates does not imply that equity has been established: neither
+does this undo the cumulative impact of mortality (which has been twice as high for
+Black people compared to white people [@hill_covid-19_2022]), nor does it imply 
+the underlying systemic barriers to equity have been overturned
+[@del_rios_covid-19_2022]. As Del Rios, Chomilo, and Lewis note, instead,
+COVID-19 leaves in its wake more years of life expectancy lost, wages lost, and
+degradation of mental health in Communities of Color.
 
-  - Insert section on prior modeling results
-  - Insert discussion motivating the need for spatiotemporal modeling
 
 # Methods
 
@@ -276,17 +271,16 @@ The following variables were retrieved at the county level:
   high (\$100k+)/low (<\$25k) household income by racial/ethnic group from the
   2014-2019 5-year American Community Survey [@us_census_bureau_american_2020]
   through the `tidyverse` R package [@walker_tidycensus_2022]. 
-  * Votes cast in the 2020 presidential election [@mit_county_2022]
+  * Votes cast in the 2020 presidential election [@mit_election_data_and_science_lab_county_2022]
   
 ## Generalized Additive Models
 
-Traditional generalized linear models fit a regression model 
-using the functional relation $g(\mu_i) = \mathbf X_i \beta$ 
-where 
-Examples of common link functions include the identity function for linear regression,
-$\log$ for Poisson regression, and the $\text{logit}$ function for logistic regression. 
+Traditional generalized linear models fit a regression model using the
+functional relation $g(\mu_i) = \mathbf X_i \beta$ where Examples of common link
+functions include the identity function for linear regression, $\log$ for
+Poisson regression, and the $\text{logit}$ function for logistic regression.
 
-Generalized additive models (GAMs) improve upon generalized linear models by
+In contrast, generalized additive models (GAMs) improve upon generalized linear models by
 allowing for the fitting of smooth functions that transform the $x$ variables.
 This is a convenient means to include nonlinear relationships between the
 outcome and predictor variables. Whereas a generalized linear model may have looked like 
@@ -297,8 +291,188 @@ where $\mu_i \equiv \mathbb E(Y_i)$, $\mathbf A_i$ is a row of the model matrix
 for any strictly non-parametric model components, $\mathbf \theta$ is the corresponding
 parameter vector, and the $f_j$ are smooth functions of the covariates $x_k$ [@wood_generalized_2017]. 
 
+```{r gam-demo-figure, fig.cap = "A demonstration of fitting regression models using B-spline basis functions. Part A. shows the simulated dataset. Part B. shows the B-spline basis functions. Part C. shows the weighting of the B-spline basis functions and their weighted sum with an intercept added to create the regression model fit to the data."}
+
+knitr::include_graphics(here("analysis/10_supplementary_gam_figures/gam_demo_figure.png"))
+```
+
+The smooth functions estimated as part of fitting a GAM are constructed using
+spline basis functions. These spline basis functions allow for the smooth
+interpolation of trends in the data allowing for the incorporation of
+nonlinearity. To avoid overfitting the data, a penalty term is introduced that
+controls the degree of "wiggliness" or smoothness and this penalty term is fit
+using generalized cross validation. B-splines are one kind of spline basis function 
+that is commonly used and are especially popular because of their property that they 
+are non-negative on only a finite interval. 
+
+While a variety of varying kinds of spline bases exist (cubic splines, B- and
+P-splines, thin-plate splines, etc.), our particular application setting
+warrants the use of tensor-product smooths because we require anisotropic
+penalization. That is to say, when we seek to create spatiotemporally smoothed
+model estimates, it's inappropriate to assume that the amount of smoothing
+across space should be the same as the amount of smoothing across time because
+they're in fundamentally different units (space being measured in Cartesian
+coordinates and time being measured in years, months, days, etc.). More details
+about tensor-product smooths are available in Simon Wood's *Generalized Additive Models - An Introduction with R* [-@wood_generalized_2017]. 
+
+## Overdispersion and Event Modeling
+
+Above and beyond using the GAM framework to allow for flexible, nonlinear
+relationships between our observed county-level variables and COVID-19
+mortality, we must have a model specification that agrees with the data
+generating process. In our case, the data generated are counts of deaths per
+population, and the class of models most suited to represent counts of events
+are Poisson, quasi-Poisson, and negative binomial models. Here we've chosen to 
+use the negative binomial model as it accounts for overdispersion and has 
+the intuitive interpretation of a Poisson model with gamma distributed underlying
+rate parameter [@gelman_bayesian_2013]. 
+
+A negative binomial model in the context of modeling count data can be written
+$$y_i \sim \text{NegativeBinomial}(u_i \theta_i, \phi),$$
+where $y_i$ are the counts observed, $u_i$ is the exposure, $\theta_i$ are
+the rates, and $\phi$ determines the amount of overdispersion. The rates
+are modeled as $\theta_i = e^{X_i \beta}$ where $X_i$ are the observed
+covariates and $\beta$ are the coefficients on the covariates corresponding
+to log rate ratios. The logarithm of the exposure, $\log(u_i)$ is often called 
+(and later herein referenced as) the offset. In epidemiological contexts, the offset 
+is often representative of the amount of person-time during which observations were recorded. Whereas the Poisson model holds that $\text{var}(y) = \mu$ where $\mu$
+is the average rate, the negative binomial model instead assumes that
+$\text{var}(y) = \mu + \mu^2/\phi$. The Poisson model
+is a special case of the negative binomial model when $\phi \to \infty$.
+
+An alternative and equivalent formulation of the negative binomial that is commonly 
+used makes the connection to the Poisson model even more clear: instead of 
+$\theta_i$ and $\phi$, using $\alpha$ and $\beta$, 
+$$y \sim \text{NegativeBinomial}(\alpha, \beta), \text{ and}$$
+$$\text{NegativeBinomial}(y|\alpha, \beta) = \int \text{Poisson}(y|\theta) \text{Gamma}(\theta | \alpha, \beta) d\theta.$$
+
+Introductions to and additional exposition on the negative binomial model,
+especially in the context of modeling counts of events outcome data, are
+available in *Bayesian Data Analysis* and *Regression and Other Stories*
+[@gelman_regression_2020; @gelman_bayesian_2013].
+
+## Variables of Interest
+
+Besides age, which is the greatest risk factor for COVID-19 mortality, we have
+included the following variables as covariates of interest: 
+
+  * Population Density per Square Mile
+  * Median Household Income
+  * Proportion in Poverty
+  * the Index of Concentration at the Extremes for Racialized Economic Segregation 
+  * Political Lean in the 2020 Election (1 = 100% Republican votes, -1 = 100% Democratic Votes)
+
+#### Index of Concentration at the Extremes for Racialized Economic Segregation
+
+The Index of Concentration at the Extremes (ICE) is a measure which describes
+how concentrated a given area's population is in terms of the extreme ends of
+privilege and marginalization [@krieger_public_2016]. 
+In general, the ICE measure is formulated as
+
+$$ \text{ICE} = \frac{\text{Number of People in Most Privileged Category} - \text{Number of People in Least Privileged Category}}{\text{Total Population}}$$
+
+Applying the ICE approach to a specific context involves defining the axes of
+privilege of interest.  In this case, data on racialized economic segregation
+are used from the US Census American Community Survey on White households
+earning more than $100,000 a year (the most privileged group) or households of
+People of Color earning less than $25,000 a year (the least privileged group).
+This variable is referred to throughout as the ICE for racialized economic
+segregation, or `ICEraceinc` in the code.
+
+Compared with the Gini
+coefficient which is one of the most popular methods for summarizing area-level
+rates of inequities, the ICE the major advantage that it is more suitable for
+describing inequities at smaller area levels [@krieger_public_2016]. While the
+Gini coefficient measures within-area dissimilarity (as in, for example, how
+unequal wealth is distributed within a county), the ICE measure establishes
+where on a spectrum a given county's population falls allowing for comparison
+across counties. The Gini coefficient suffers from the fact that areas which are
+made up of relatively homogeneous populations will appear as having low
+within-area inequality (and therefore low Gini coefficient). Instead, the ICE
+measures how much of the population is either privileged or not. The Gini
+coefficient remains useful for reporting on the degree of inequity in larger
+areal units (like countries, states, and regions), but at smaller areal units
+(like counties, ZIP codes, census tracts) can be more difficult to interpret and
+compare. Maps of ICE measure can elucidate what spatial social segregation and
+polarization exist, and the ICE for racialized economic segregation has been
+repeatedly and significantly associated with COVID-19 outcomes
+[@hanage_covid-19_2020; @chen_revealing_2021; @krieger_relationship_2022;
+@eichenbaum_health_2022; @brown_ecological_2021; @sonderlund_racialized_2022;
+@saha_neighborhood-level_2020].
+
+#### Political Lean
+
+Political lean has been associated with COVID-19 mortality in numerous studies,
+with plausible mechanisms explaining the association including differences in
+non-pharmaceutical intervention uptake (mask usage, social distancing,
+quarantining), differences in rates of vaccination, differences in political
+leadership's messaging, resource allocation, and the adoption of policy
+interventions [@krieger_relationship_2022; @kaashoek_evolving_2021; @leonhardt_red_2021; @gonzalez_conservatism_2021; @grossman_political_2020]. 
+
 
 # Results
+
+## Application 1: Non-Spatial Covariate Effects Over Time 
+
+The GAM models are fit with the following structure using 
+the `gam` function from the `mgcv` package [@wood_mgcv_2022]: 
+
+```{r gam-demo-code, echo = TRUE, eval=FALSE}
+gam(
+  formula = deaths ~ s(median_age) + te(covariate, date, d=c(1,1)), # regression formula
+  offset = log(popsize/1e5/12), # our offset represents the person-time
+  data = df,     # our data-set of county-level observations
+  family = nb(link='log')  # indicates negative binomial family and a log-link function
+)
+```
+
+The formula used puts a one-dimensional smoothing spline to represent a
+nonlinear age-effect and a two-dimensional tensor-product smooth on the
+interaction between the given covariate and the date. The `d=c(1,1)` argument
+provides the instruction necessary to consider covariate and date as being on
+separate scales and therefore to fit the tensor-product smooth with anisotropy —
+that is, to allow for independent amounts of scaling in the dimensions of the
+covariate and time. The offset used structures the regression to estimate rates
+in units of person-time per 100,000 person-years. Since the death counts are
+aggregated to the monthly level, the person-time in units of 100,000
+person-years are calculated by taking each county's population size, dividing by
+100,000, and dividing by 12 (for the 12 months in a year).
+
+The above structure is used to estimate models for our different `covariate`
+variables of interest: median income, percent in poverty, the ICE for racialized
+economic segregation, political lean.  Whereas the other models treat median age
+as a variable to adjust for, the model presenting the effect of median age over
+time treats median age as the main covariate of interest including it as the 
+`te(covariate, date, d=c(1,1))` and dropping the `s(median_age)` term which is 
+redundant. Results of these models are summarized in \@ref(fig:one-variable-over-time)
+where the additional COVID-19 mortality associated with each covariate is visualized.
+
+(ref:medianage) [@us_census_bureau_nation_2022]
+
+```{r one-variable-over-time, fig.cap = "Additional COVID-19 mortality associated with covariates over time. A) age and time, B) log (base 10) population density and time, C) median income and time, D) proportion in poverty and time, E) ICEraceinc and time, F) political lean and time. In panels B-F the effect of age is marginalized out using the median age in the US, 38.8 (ref:medianage).", fig.align = 'center', out.height = '75%'}
+knitr::include_graphics(here("analysis/04_one_variable_over_time/panel_figure.png"))
+```
+
+Likelihood ratio tests confirmed that models with covariates interacted with
+time had significantly lower residual deviance ($p \leq 2.2e^{-16}$ for all
+models) compared to models only including a spline term on median age and the
+given covariate not interacted with time. The model interacting median age 
+and time was compared to a model with a spline for median age alone. Akaike Information
+Criteria values were also lower for all models compared to models that did
+not interact the covariates with time.
+
+Another non-spatial application of GAMs to describe the distribution of 
+COVID-19 mortality in the US over time is to consider the associations of 
+mortality with three-way interactions of time and two covariates taken together. 
+In the following example, the formula used is `deaths ~ te(date, ICEraceinc, median_age, d=c(1,1,1))`.  Again, the `d` argument specifying the marginal 
+basis dimensions is used indicate that each of the `date`, `ICEraceinc`, and 
+`median_age` measures are in different units and should not be smoothed assuming
+that a one unit difference in one variable is comparable to a one unit difference
+in another variable. 
+
+```{r two-variables-over-time, fig.cap="The changing interacted effect of the ICE for racialized economic segregation and age over time. A) May 2020, B) November 2020, C) May 2021, D) October 2021, E) February 2022, F) August 2022. An animated version is available online at "}
+knitr::include_graphics(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/panel_figure.png"))
+```
 
 ## Evaluating Spatial and Temporal Autocorrelation
 
@@ -340,11 +514,12 @@ knitr::include_graphics(here("analysis/09_spatiotemporal_models/panel_figure.png
 
 ## Limitations
 
-  * Missing data 
   * Ecological fallacy 
   * Age effects
   * Fixed population denominators -> real-time denominator estimates
   * Vaccination and mobility effects
+  * Equal Smoothing Across All Areas
+  * Soap Film Smoothers
 
 # Conclusions
 
