@@ -45,7 +45,7 @@ spatiotemporal_df %<>% filter(state %in% setdiff(c(state.name, 'District of Colu
 
 # fit bam (e.g., GAM optimized for very large datasets)
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)),
+  formula = deaths ~ s(median_age) + te(latitude, longitude, date_int, d = c(2, 1)),
   offset = log(popsize/1e5/12),
   family = nb(),
   data = spatiotemporal_df
@@ -192,7 +192,7 @@ ggsave(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"), widt
 # ICEraceinc without spatiotemporal adjustment
 
 model <- bam(
-  formula = deaths ~ # te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(median_age) +
     te(ICEraceinc, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -203,6 +203,7 @@ png(filename = here("analysis/09_spatiotemporal_models/ICEraceinc_and_time_no_sp
 vis.gam(
   model,
   view = c('date_int', 'ICEraceinc'),
+  cond = list(age = 38.8),
   n.grid = 50,
   theta = 35,
   phi = 32,
@@ -222,7 +223,7 @@ dev.off()
 # now consider how ICEraceinc matters after taking into account spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(median_age) + te(latitude, longitude, date_int, d = c(2, 1)) +
     te(ICEraceinc, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -233,6 +234,7 @@ png(filename = here("analysis/09_spatiotemporal_models/ICEraceinc_and_time.png")
 vis.gam(
   model,
   view = c('date_int', 'ICEraceinc'),
+  cond = list(age = 38.8),
   n.grid = 50,
   theta = 35,
   phi = 32,
@@ -251,7 +253,7 @@ dev.off()
 # median age without adjusting for spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ # te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) +
     te(median_age, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -281,7 +283,7 @@ dev.off()
 # median age with adjusting for spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) + te(latitude, longitude, date_int, d = c(2, 1)) +
     te(median_age, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -310,7 +312,7 @@ dev.off()
 # now median income separately adjusting for spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) + te(latitude, longitude, date_int, d = c(2, 1)) +
     te(median_income, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -343,7 +345,7 @@ dev.off()
 spatiotemporal_df %<>% mutate(log_pop_density = log10(pop_density))
 
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) + te(latitude, longitude, date_int, d = c(2, 1)) +
     te(log_pop_density, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -373,7 +375,7 @@ dev.off()
 # now political_lean without adjusting for spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ # te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) +
     te(political_lean, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -402,7 +404,7 @@ dev.off()
 # now political_lean and adjusting for spatiotemporal autocorrelation
 
 model <- bam(
-  formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
+  formula = deaths ~ s(age) + te(latitude, longitude, date_int, d = c(2, 1)) +
     te(political_lean, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
@@ -481,4 +483,31 @@ plot_grid(
 )
 
 ggsave(here("analysis/09_spatiotemporal_models/panel_figure.png"), width = 10, height = 5, bg = 'white')
+
+
+plot_grid(
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_age_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_age_and_time.png")),
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/log_pop_density_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/log_pop_density_and_time.png")),
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_income_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/median_income_and_time.png")),
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/poverty_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/poverty_and_time.png")),
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/ICEraceinc_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/ICEraceinc_and_time.png")),
+
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/political_lean_and_time_no_spatiotemporal.png")),
+  ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/political_lean_and_time.png")),
+
+  labels = 'AUTO',
+  ncol = 4
+)
+
+ggsave(here("analysis/09_spatiotemporal_models/panel_figure.png"), height = 8, width = 8, bg = 'white', scale = .8)
+
 

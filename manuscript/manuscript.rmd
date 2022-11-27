@@ -38,7 +38,7 @@ abstract: |
   \newline 
   
   \noindent Abbreviations used: United States (US), Coronavirus Disease 2019 (COVID-19), Generalized
-  Additive Model (GAM), Centers for Disease Control and Prevention (CDC)
+  Additive Model (GAM), Centers for Disease Control and Prevention (CDC), Index of Concentration at the Extremes (ICE)
 bibliography: bibliography.bib
 csl: apa.csl
 link-citations: true
@@ -146,11 +146,14 @@ technological innovations in vaccine technology.
 knitr::include_graphics(here("analysis/02_plot_county_trends/county_trends_by_division.png"))
 ```
 
-Prior literature has demonstrated that geography has played a significant role
-in the spread and impact of of COVID-19. Methods employed to highlight the role
-geography plays have included quantile regression [@sigler_socio-spatial_2021],
-Besag-York-Molli\'e mixed models [@whittle_ecological_2020], spatial cluster analysis
-[@sugg_mapping_2021], geographically weighted regression [@mollalo_gis-based_2020; @park_covid-19_2021], and others. 
+Prior literature has demonstrated that the spread and impact of COVID-19 has
+varied geography over time reflecting dynamics in the timing of introduction and
+transmission events. Methods employed to highlight the geographic patterning in
+COVID-19 outcomes have included quantile regression
+[@sigler_socio-spatial_2021], Besag-York-Molli\'e mixed models
+[@whittle_ecological_2020], spatial cluster analysis [@sugg_mapping_2021],
+geographically weighted regression [@mollalo_gis-based_2020;
+@park_covid-19_2021], and others.
 
 Figure \@ref(fig:figure-county-trends) shows the monthly COVID-19 mortality
 rates for the counties grouped within each of the nine U.S. Census Divisions
@@ -266,8 +269,7 @@ degradation of mental health in Communities of Color.
 The following variables were retrieved at the county level: 
 
   * Counts of COVID-19 deaths [@the_new_york_times_coronavirus_2021].
-  * Population size estimates for 2020 from the U.S. Census (Redistricting 
-  File Public-Law 94-171 Dataset) [@us_census_bureau_2020_2021].
+  * Population size estimates for 2020 from the U.S. Census [@us_census_bureau_2020_2021].
   * Median age, median household income, racial/ethnic composition, population
   density, percent below the federal poverty line, and number of households with
   high (\$100k+)/low (<\$25k) household income by racial/ethnic group from the
@@ -277,15 +279,10 @@ The following variables were retrieved at the county level:
   
 ## Generalized Additive Models
 
-Traditional generalized linear models fit a regression model using the
-functional relation $g(\mu_i) = \mathbf X_i \beta$ where Examples of common link
-functions include the identity function for linear regression, $\log$ for
-Poisson regression, and the $\text{logit}$ function for logistic regression.
-
-In contrast, generalized additive models (GAMs) improve upon generalized linear models by
+Generalized additive models (GAMs) improve upon generalized linear models by
 allowing for the fitting of smooth functions that transform the $x$ variables.
 This is a convenient means to include nonlinear relationships between the
-outcome and predictor variables. Whereas a generalized linear model may have looked like 
+outcome and predictor variables. Whereas a generalized linear model may look like 
 $$ g(\mu_i) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} ...$$ 
 a generalized additive model could look like 
 $$ g(\mu_i) = \mathbf A_i \mathbf \theta + f_1(x_{i1}) + f_2(x_{i2}) + f_3(x_{i3}, x_{i4}) + \dots$$
@@ -331,7 +328,7 @@ rate parameter [@gelman_bayesian_2013].
 
 A negative binomial model in the context of modeling count data can be written
 $$y_i \sim \text{NegativeBinomial}(u_i \theta_i, \phi),$$
-where $y_i$ are the counts observed, $u_i$ is the exposure, $\theta_i$ are
+where $y_i$ are the counts observed, $u_i$ is the "exposure", $\theta_i$ are
 the rates, and $\phi$ determines the amount of overdispersion. The rates
 are modeled as $\theta_i = e^{X_i \beta}$ where $X_i$ are the observed
 covariates and $\beta$ are the coefficients on the covariates corresponding
@@ -355,8 +352,8 @@ available in *Bayesian Data Analysis* and *Regression and Other Stories*
 
 ## Variables of Interest
 
-Besides age, which is the greatest risk factor for COVID-19 mortality, we have
-included the following variables as covariates of interest: 
+Besides age, which is a strong determinant of COVID-19 mortality risk, we have
+included the following variables as covariates of interest:
 
   * Population Density per Square Mile
   * Median Household Income
@@ -416,7 +413,7 @@ interventions [@krieger_relationship_2022; @kaashoek_evolving_2021; @leonhardt_r
 
 ## Application 1: Non-Spatial Covariate Effects Over Time 
 
-The GAM models are fit with the following structure using 
+The GAM models shown in Figure \@ref(fig:one-variable-over-time) are fit with the following structure using 
 the `gam` function from the `mgcv` package [@wood_mgcv_2022]: 
 
 ```{r gam-demo-code, echo = TRUE, eval=FALSE}
@@ -442,12 +439,11 @@ person-years are calculated by taking each county's population size, dividing by
 
 The above structure is used to estimate models for our different `covariate`
 variables of interest: median income, percent in poverty, the ICE for racialized
-economic segregation, political lean.  Whereas the other models treat median age
-as a variable to adjust for, the model presenting the effect of median age over
-time treats median age as the main covariate of interest including it as the 
-`te(covariate, date, d=c(1,1))` and dropping the `s(median_age)` term which is 
-redundant. Results of these models are summarized in \@ref(fig:one-variable-over-time)
-where the additional COVID-19 mortality associated with each covariate is visualized.
+economic segregation, political lean.  The model presenting median age treats
+median age as the main covariate of interest including it as the `te(covariate,
+date, d=c(1,1))`. Results of these models are summarized in Figure
+\@ref(fig:one-variable-over-time) where the additional COVID-19 mortality
+associated with each covariate is visualized.
 
 (ref:medianage) [@us_census_bureau_nation_2022]
 
@@ -463,171 +459,183 @@ and time was compared to a model with a spline for median age alone. Akaike Info
 Criteria values were also lower for all models compared to models that did
 not interact the covariates with time.
 
-Another non-spatial application of GAMs to describe the distribution of 
+A more complex non-spatial application of GAMs to describe the distribution of 
 COVID-19 mortality in the US over time is to consider the associations of 
 mortality with three-way interactions of time and two covariates taken together. 
 In the following example, the formula used is `deaths ~ te(date, ICEraceinc, median_age, d=c(1,1,1))`.  Again, the `d` argument specifying the marginal 
 basis dimensions is used indicate that each of the `date`, `ICEraceinc`, and 
 `median_age` measures are in different units and should not be smoothed assuming
 that a one unit difference in one variable is comparable to a one unit difference
-in another variable. 
+in another variable. This approach is represented in Figure \@ref(fig:two-variables-over-time).
 
-```{r two-variables-over-time, fig.cap="The changing interacted effect of the ICE for racialized economic segregation and age over time. A) May 2020, B) November 2020, C) May 2021, D) October 2021, E) February 2022, F) August 2022. An animated version is available online at [https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/readme.md](https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/readme.md)"}
+```{r two-variables-over-time, fig.cap="The changing interacted effect of the ICE for racialized economic segregation and age over time. A) May 2020, B) November 2020, C) May 2021, D) October 2021, E) February 2022, F) August 2022. An animated version is available online at \\url{https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/readme.md}"}
 knitr::include_graphics(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/panel_figure.png"))
 ```
 
+\newpage
 ## Application 2: Spatiotemporal Smoothing
 
 By fitting GAMs with a tensor-product smoothing term on latitude, longitude, and
 time we can estimate a spatiotemporally smoothed trend in COVID-19 mortality. To
 do this, the GAM is constructed similarly as in Application 1 but with the
-formula specified as `deaths ~ te(latitude, longitude, time, d=c(2,1))` where
+smoothing term specified as `te(latitude, longitude, time, d=c(2,1))` where
 `d=c(2,1)` indicates that `latitude` and `longitude` share the same dimensions
-(i.e., both are spatial and in units of degrees) while the `time` data are in separate
-units. 
+(i.e., both are spatial and in units of degrees) while the `time` data are in
+separate units. Note that results presented in Application 2 and 3 are based on
+county-level data from the contiguous US excluding Alaska and Hawaii.
 
 Using GAMs to present spatiotemporally smoothed estimates of COVID-19 mortality
 allows for the synthesis of trends over time. Whereas the raw rates of COVID-19
 mortality are noisy due to 72% of the land area in the US being classified as
-rural and low population density, the spatiotemporally smoothed GAM estimates
+rural and low population density [@health_resources__services_administration_defining_2022], the spatiotemporally smoothed GAM estimates
 use population weighting via the offset specified to estimate a latent surface
 that represents localized mortality rate averages in spatial coordinates and in
-time. 
+time.
+
+Figure \@ref(fig:crude-vs-smoothed) shows the difference between crude mortality
+rates and spatially smoothed mortality rates in January 2022 to illustrate the
+level of noise present in raw rates and how spatially smoothing synthesizes
+local geographic patterns into interpretable trends that can be meaningfully
+interpreted as local area mortality risk levels pooling information across
+nearby county rates.
+
+Figure \@ref(fig:spatiotemporal-panel-figure) shows the results from a
+spatiotemporally smoothed model in select months to highlight how spatiotemporal
+smoothing can yield results that intuitively synthesize trends in space and
+time.
 
 ```{r crude-vs-smoothed, fig.cap = "Comparison of crude vs. smoothed mortality rates. A) Crude mortality rates per 100,000 person-years in January 2022. B) Smoothed mortality rates from a GAM applied to mortality rates from January 2022."}
 knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/side_by_side_crude_and_smoothed.png"))
 ```
 
-```{r spatiotemporal-panel-figure, fig.cap = "Spatiotemporally smoothed COVID-19 mortality estimates from a GAM fit to data from March 2020-August 2022. Panels show months selected to highlight the changing spatial patterns of COVID-19 mortality risk over time. An animated version is available online at []()"}
+```{r spatiotemporal-panel-figure, fig.cap = "Spatiotemporally smoothed COVID-19 mortality estimates from a GAM fit to data from March 2020-August 2022. Panels show months selected to highlight the changing spatial patterns of COVID-19 mortality risk over time. An animated version is available online at \\url{https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/09_spatiotemporal_models/animation/readme.md}"}
 knitr::include_graphics(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"))
 ```
 
+\newpage
 ## Application 3: Estimating Covariate Effects Adjusted for Spatiotemporal Autocorrelation
 
-### Evaluating Spatial and Temporal Autocorrelation
+The final application of GAMs presented here is to estimate the effects of
+covariates after adjusting for a spatiotemporally smoothed term as shown in
+Application 2. This has the interpretation of asking what are the changes to
+COVID-19 mortality rates associated with each covariate after taking into
+account local geographic patterns over time. In particular, this is relevant for
+understanding what county-level measures are associated with elevated COVID-19
+mortality even after adjusting for where COVID-19 rates were locally elevated
+or depressed due to variation in the timing of local introduction, transmission,
+and diffusion. 
 
-```{r figure county neighboring graph, fig.cap = "A) The spatial neighbor graph for counties in the US. In this graph, county centroids are connected if the two counties are adjacent to one another (i.e., share a boundary). This and similar graphs that represent neighbor relationships or geographic proximity are often used in modeling contexts to create spatial weights that account for which regions help to explain a given region's observed data.", fig.show='hold', out.width = '50%', fig.env = "figure*"} 
-desired_caption <- 
-  " B) Moran's scatter plot \\citep{anselin_simple_1996} depicts for each region (in our case, counties) on the x-axis the region rate and on the y-axis the average of the region's neighbors' rates. This diagnostic plot provides a simple means to assess to what degree neighboring regions share similar rates. In a setting where regions have high correlation, Moran's scatter plot will exhibit a high degree of positive correlation."
-knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/county_neighboring_relations.png")) 
-knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/morans_plot.png"))
+```{r neighboring-graph-morans-i, fig.cap = "The spatial autocorrelation of COVID-19 rates in January 2022. Panel A shows the graph of which US counties are connected by neighboring relations. Panel B shows a scatterplot depicting each US counties' COVID-19 rate (x-axis) compared to the average of its neighbors' COVID-19 mortality rates (y-axis). A regression line shows the association between counties' COVID-19 rates and their neighboring counties' COVID-19 rates.  Dotted lines indicated the average for US county-level crude COVID-19 mortality rates (vertical) and for the average of each counties' neighboring counties' COVID-19 rates (horizontal)."}
+knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/county_network_and_morans_plot.png"))
 ```
 
-```{r figure 4, fig.cap = ""}
+```{r temporal-acf, fig.cap = "The median (black) and quantiles (shaded bands) of temporal autocorrelation of counties' COVID-19 mortality rates over time starting from April 2020.", out.width = '50%', fig.align='center'}
 knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/temporal_acf.png"))
 ```
 
-## Regression Modeling Results
+To motivate the need for and application of spatiotemporal smoothing in
+assessing the associated changes in COVID-19 mortality with county-level
+covariates, Figure \@ref(fig:neighboring-graph-morans-i) presents the Moran's I
+diagnostic plot for January 2022 which summarizes the amount of autocorrelation
+between counties' COVID-19 mortality rates and a population-weighted average of
+each counties' neighboring counties' COVID-19 mortality rates. The observed
+autocorrelation indicates that there is an association between counties'
+COVID-19 rates and their neighboring counties' COVID-19 rates, implying that
+without taking this patterning into account, regression models that do not
+explicitly model the effect of spatial autocorrelation may be biased due to
+inappropriately assuming that county-level data are independent of one another. Second, 
+while the Moran's I plot demonstrates the spatial-correlation present in the data
+at a single time-point, the following Figure \@ref(fig:temporal-acf) shows the
+tendency of county COVID-19 observations to be autocorrelated between subsequent
+months and moreover there appears to be an oscillating trend at the 6-month and
+12-month marks suggestive of effects due to the dynamics associated with
+temporary infection induced immunity and seasonality. 
 
-We used GAMs to describe the following: 
-
-  * the changing associations between individual area-based measures
-  and COVID-19 mortality over time;
-  * the changing associations between bivariate area-based measures
-  and COVID-19 mortality over time; 
-  * associations with area-based measures and COVID-19 mortality after
-  controlling for spatio-temporal autocorrelation. 
-
-Additionally, as sensitivity analyses, random forest models were fit to compare
-with the coefficient estimates from the GAMs.
-
-
-```{r figure 6, fig.cap = ""}
+```{r with-and-without-spatiotemporal-adjustment, fig.cap = "Estimates of increases in COVID-19 mortality associated with county-level covariates without (first) and with (second) adjustment for spatiotemporal autocorrelation. Panels A and B show COVID-19 mortality increases associated with varying levels of median age over time; C and D show associations with log population density; E and F median income; G and H for proportion in poverty; I and J the ICE for racialized economic segregation; K and L political lean.", out.width = '85%', fig.align='center'}
 knitr::include_graphics(here("analysis/09_spatiotemporal_models/panel_figure.png"))
 ```
 
+Figure \@ref(fig:with-and-without-spatiotemporal-adjustment) shows the effects associated
+with each covariate over time with and without adjustment for spatiotemporal trends. 
+The models for population density and median income show particularly marked changes
+with the spike at high population density and high median incomes disappearing 
+after adjusting for a spatiotemporally smoothed term. This likely reflects the
+early emergence and surge of COVID-19 in the greater New York City area as being
+predominantly a feature of the combined effect of human geography and infectious
+disease dynamics where the earliest introductions of COVID-19 were made to dense
+social networks in the US. Other effects remain qualitatively changed very little,
+suggesting that the trends in COVID-19 mortality associated with these county-level
+measures remains durable when taking into account spatiotemporal autocorrelation.
+
+\newpage
 # Discussion
 
+This paper presents three applications of GAMs to county-level COVID-19
+mortality data from the US during March 2020 to August 2022. This paper
+addresses an important need, which is to assess what measures of the
+socioeconomic and geopolitical landscape are associated with increases in
+COVID-19 mortality in a way that takes into account how infectious disease
+dynamics are locally correlated in space and time. However, the approaches
+outlined in this paper are not without several limitations which include (at
+least) the following: the potential for cross-level confounding, lack of
+individual level data, an inability to include all possible metrics, further
+improvements to the methods used may be warranted, and we are unable to make
+claims about the causal relationships between the variables investigated.
 
-## Limitations
+In analyses that use area-level aggregated data, the ecologic fallacy refers to
+the possibility that associations between area-level measures and outcomes may
+not reflect the associations that would be observed if analyzing individual
+level data on the same measures and outcomes as a result of cross-level
+confounding [@greenland_ecologic_2001]. It's important to note that
+some of the variables are included to contextualize the places in which people
+live, reside, and work and area-based social metrics should be included in
+individual-level analyses so as to accurately capture the effects of both
+individual-level risk factors and risk factors that stem from the contexts in
+which people exist [@testa_public_2022].
 
-  * Ecological fallacy 
-  * Age effects
-  * Fixed population denominators -> real-time denominator estimates
-  * Vaccination and mobility effects
-  * Equal Smoothing Across All Areas
-  * Soap Film Smoothers
+One particular improvement that could be made in future work is to address age
+adjustment by using direct or indirect age standardization [@anderson_age_1998] or 
+to create age-group stratified models. In the applications presented here,
+county-level median age is adjusted for in order to control for age effects.
+
+Additional variables like vaccination rates, mobility data, further variables
+that relate to risk factors for COVID-19, and other COVID-19 related outcomes
+like case trends and hospitalizations may be worthwhile to investigate under a
+similar framework. The emphasis on trends in COVID-19 mortality in the
+applications in this paper was done to prioritize presenting data that are less
+subject to the reporting inconsistencies in COVID-19 cases and
+hospitalizations [@galaitsi_challenges_2021]. 
+
+Further improvements to the methods employed here could include use of soap film
+smoothing splines which are more appropriate in settings where non-convex
+geographic boundaries are common (as in with peninsulas and bays)
+[@wood_soap_2008]. Taking a critical eye to the assumptions employed reveals yet
+another area of potential improvement, which is the nature of how the complexity of the 
+smoothing splines employed are penalized in the GAM framework. It is conceivable that
+geographic changes in COVID-19 mortality rates are not equally smooth across 
+all regions of the US, potentially warranting rapid changes in some areas 
+and smooth changes in other areas. The Bayesian wombling literature provides
+the means to identify areas of rapid change in latent surface models and may pose
+a fruitful direction of exploration for future efforts to understand trends
+in COVID-19 mortality rates in the US [@gelfand_bayesian_2015]. 
 
 # Conclusions
 
+This work introduces generalized additive models (GAMs) applied to COVID-19
+mortality data to document the disparities and inequities in which US counties
+at what times suffered the worst mortality outcomes. The effort to document
+inequities and explain the driving mechanisms behind them is crucial in building
+up the evidence necessary to enact policy changes that can mitigate unjust and
+preventable harm in the future. To this end, it is critical that efforts to
+model infectious disease dynamics take into account how disease transmission and
+outcomes are spatiotemporally patterned, violating any misplaced assumptions
+that area-level disease rates can be treated as independent observations. By
+presenting novel applications of GAMs to trends in COVID-19 mortality, this
+paper illustrates new ways of understanding and visualizing the disproportionate
+burden some communities have suffered incorporating complex patterns of
+interaction across socioeconomic and geopolitical variables and spatiotemporal
+trends.
 
+\newpage
 # References
-
-<!-- 1 million covid deaths: 
-https://coronavirus.jhu.edu/from-our-experts/u-s-officially-surpasses-1-million-covid-19-deaths --> 
-
-
-<!-- nearly 225,000 Americans have died since the start of 2022
-https://abcnews.go.com/Health/225000-americans-died-covid-19-start-2022-viral/story?id=90339579 --> 
-
-
-<!-- 
-vaccine timeline
-https://www.mayoclinic.org/coronavirus-covid-19/history-disease-outbreaks-vaccine-timeline/covid-19
---> 
-
-
-<!--
-less than 4% of americans had gotten the booster 1 month into availability
-https://www.nbcnews.com/health/health-news/updated-covid-booster-shots-doses-administered-cdc-rcna48960
---> 
-
-<!-- 2020 ACS data are experimental 
-https://www.census.gov/newsroom/press-releases/2021/experimental-2020-acs-1-year-data.html --> 
-
-
-<!--
-Spatial-temporal generalized additive model for modeling COVID-19 mortality risk in Toronto, Canada
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8257405/ --> 
-
-<!-- 
-Using GAM functions and Markov-Switching models in an evaluation framework to assess countries’ performance in controlling the COVID-19 pandemic
-https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-021-11891-6 --> 
-
-<!--
-Statistical modelling of COVID-19 data: Putting generalized additive models to work
-https://journals.sagepub.com/doi/full/10.1177/1471082X221124628
---> 
-
-<!--
-Inference following multiple imputation for generalized additive models: an investigation of the median p-value rule with applications to the Pulmonary Hypertension Association Registry and Colorado COVID-19 hospitalization data
-https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-022-01613-w
--->
-
-<!--
-Generalized Additive Models to Capture the Death Rates in Canada COVID-19
-https://link.springer.com/chapter/10.1007/978-3-030-85053-1_7 --> 
-
-<!--
-Contribution of Two-Dose Vaccination Toward the Reduction of COVID-19 Cases, ICU Hospitalizations and Deaths in Chile Assessed Through Explanatory Generalized Additive Models for Location, Scale, and Shape
-https://www.frontiersin.org/articles/10.3389/fpubh.2022.815036/full --> 
-
-<!-- 
-Combining graph neural networks and spatio-temporal disease models to improve the prediction of weekly COVID-19 cases in Germany
-https://www.nature.com/articles/s41598-022-07757-5 --> 
-
-<!-- 
-Association between mobility patterns and COVID-19 transmission in the USA: a mathematical modelling study
-https://www.sciencedirect.com/science/article/pii/S1473309920305533 --> 
-
-<!-- 
-Examining spatiotemporal evolution of racial/ethnic disparities in human mobility and COVID-19 health outcomes: Evidence from the contiguous United States
-https://www.sciencedirect.com/science/article/pii/S2210670721007721 --> 
-
-<!--
-Social, economic, and environmental factors influencing the basic reproduction number of COVID-19 across countries
-https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0252373 --> 
-
-
-<!-- 
-https://asbates.rbind.io/2019/05/03/gams-for-time-series/
---> 
-
-<!--
-https://environmentalcomputing.net/statistics/gams/
---> 
-
-<!--
-https://petolau.github.io/Analyzing-double-seasonal-time-series-with-GAM-in-R/
---> 
 

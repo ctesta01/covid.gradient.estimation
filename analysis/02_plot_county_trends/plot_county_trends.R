@@ -55,12 +55,13 @@ plt_orig <- df %>%
   stat_lineribbon(
     mapping = aes(
       group = division,
-      fill = division,
+      # fill = division,
       color = division,
       fill_ramp = stat(level)
     ),
     alpha = .75,
-    color = 'grey20'
+    color = 'grey20',
+    fill = 'red'
   ) +
   geom_line(
     mapping = aes(size = ' ')
@@ -107,7 +108,8 @@ wtd_quantile_df <-
     ci95_low = Hmisc::wtd.quantile(x = crude_rate_per_100k_py, weights = popsize, probs = .025, na.rm=T)
   )
 
-palette <- scales::hue_pal()(9) # RColorBrewer::brewer.pal(n = 9, name = 'Set1')
+# palette <- scales::hue_pal()(9) # RColorBrewer::brewer.pal(n = 9, name = 'Set1')
+palette <- rep('red', 9)
 palette_named <- setNames(palette, unique(wtd_quantile_df$division))
 
 plt <-
@@ -120,20 +122,20 @@ plt <-
   geom_ribbon(
     mapping = aes(ymax = ci95_high, ymin = ci95_low, group = NULL, y = NULL),
     size = 0,
-    alpha = 0.7,
-    fill = colorspace::lighten(palette_named[wtd_quantile_df$division], .7)
+    alpha = 0.6,
+    fill = "#ffe3d8" # colorspace::lighten(palette_named[wtd_quantile_df$division], .8)
   ) +
   geom_ribbon(
     mapping = aes(ymax = ci80_high, ymin = ci80_low, group = NULL, y = NULL),
     size = 0,
-    alpha = 0.7,
-    fill = colorspace::lighten(palette_named[wtd_quantile_df$division], .3)
+    alpha = 0.8,
+    fill = "#ffa78f" # colorspace::lighten(palette_named[wtd_quantile_df$division], .4)
   ) +
   geom_ribbon(
     mapping = aes(ymax = ci50_high, ymin = ci50_low, group = NULL, y = NULL),
     size = 0,
-    alpha = 0.8,
-    fill = palette_named[wtd_quantile_df$division]
+    alpha = 1,
+    fill = "red" # palette_named[wtd_quantile_df$division]
   ) +
   geom_line(
     mapping = aes(y = median, group = NULL),

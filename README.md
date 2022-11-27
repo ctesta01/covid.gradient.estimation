@@ -3,8 +3,9 @@
 ## Repository Overview
 
 This repository is home to the `covid.gradient.estimation` package which houses
-functions to clean and merge data from a variety of sources on county-level 
-COVID-19 outcomes, sociodemographic measures, and geography. 
+functions to clean, merge, and analyze data from a variety of sources on county-level
+COVID-19 outcomes, sociodemographic measures, and geography using generalized additive
+models (GAMs).
 
 This package can be installed by running:
 
@@ -22,7 +23,7 @@ R
 ├── create_analytic_dataset.R   # merge datasets together
 ├── get_absms_from_acs.R        # get area-based social metrics from the American Community Survey
 ├── get_popsizes.R              # get the 2020 population estimates from the Census
-├── load_covid19_deaths.R       # load the NYTimes and CDC Wonder COVID-19 death counts
+├── load_covid19_deaths.R       # load the NYTimes COVID-19 death counts
 └── load_political_lean.R       # load the MIT Election Lab votes cast data
 ```
 
@@ -30,20 +31,11 @@ There are several datasets installed in the package in the `inst/` directory.
 Those include a cached copy of the county-level area based social metrics
 so that we don't have to query the American Community Survey API every time we 
 recreate our analytic dataset, the COVID-19 deaths from CDC WONDER and NYTimes,
-and the votes cast by county data from the MIT Election Lab.  Ultimately 
-we didn't end up using the CDC WONDER data much because the amount of suppression
-it included was high, especially for smaller counties (death counts from 0 to 9 are 
-suppressed to protect individual's privacy).
+and the votes cast by county data from the MIT Election Lab.  
 
 ```
 inst
 ├── cached_absms.rds
-├── cdc_wonder
-│   ├── 2020 - Provisional Mortality Statistics, 2018 through Last Month.txt
-│   ├── 2021 - Provisional Mortality Statistics, 2018 through Last Month.txt
-│   ├── 2022 - Provisional Mortality Statistics, 2018 through Last Month.txt
-│   ├── States - Provisional Mortality Statistics, 2018 through Last Month.txt
-│   └── readme.txt
 ├── mit_election_lab
 │   └── countypres_2000-2020.csv
 └── nytimes
@@ -60,7 +52,11 @@ The analyses `01` through `03` can be considered
 exploratory data analyses, with `04`, `05` main analyses for the non-spatial 
 modeling results, `06` and `07` supplementary analyses meant to inform the 
 spatial modeling approach, and `08` exploratory data analysis to illustrate
-the importance of taking spatiotemporal autocorrelation into account.
+the importance of taking spatiotemporal autocorrelation into account. `09`
+includes the code to run the models which assess the association of varying
+county-level covariates and COVID-19 mortality after taking into account a
+spatiotemporal latent surface. `10` contains the code necessary to generate the 
+figure illustrating how spline basis functions are used in a GAM. 
 
 ```
 analysis
@@ -71,14 +67,14 @@ analysis
 ├── 05_two_variables_at_a_time
 ├── 06_random_forest
 ├── 07_xgboost
-└── 08_spatiotemporal_autocorrelation
+├── 08_spatiotemporal_autocorrelation
+├── 09_spatiotemporal_models
+└── 10_supplementary_gam_figures
 ```
 
 Finally, the manuscript is produced in the `manuscript/` directory.
 
-## Background 
-
-![a timeseries figure showing the state trajectories of COVID-19 in the United States](analysis/01_state_trajectories/state_covid19_mortality_trajectories.png)
+## Figures
 
 ![figure showing trends by county within the census divisions](analysis/02_plot_county_trends/county_trends_by_division.png)
 
@@ -90,23 +86,19 @@ Finally, the manuscript is produced in the `manuscript/` directory.
 
 ![a plot of the average county level autocorrelation over time;  e.g. how correlated monthly observations were with observations from future months](analysis/08_spatiotemporal_autocorrelation/temporal_acf.png)
 
-## Results 
-
-### Non-Spatial GAMs 
+### Non-Spatial GAM Figures
 
 ![effect of income and time visualized using a GAM](analysis/04_one_variable_over_time/income_and_time.png)
 
 ![effect of ICEraceinc and age over time visualized using a GAM](analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/animation_with_pause.gif)
 
-### Illustrating Spatial Smoothing 
+### Spatial Smoothing GAM Figures
 
-![map showing crude covid-19 mortality rates from January 2021](analysis/08_spatiotemporal_autocorrelation/crude_mortality_map_january2022.png)
-
-![map showing smoothed mortality rates from january 2021](analysis/08_spatiotemporal_autocorrelation/smoothed_mortality_map_january2022.png)
+![two maps showing crude and smoothed mortality rates from january 2021](analysis/08_spatiotemporal_autocorrelation/side_by_side_crude_and_smoothed.png)
 
 ![animation of the spread of COVID-19 using spatiotemporal smoothing via generalized additive models](analysis/09_spatiotemporal_models/animation/spatiotemporal_animation_with_pause.gif)
 
-### Effects Associated with Covariates Before and After Adjusting for Spatiotemporal Autocorrelation
+### Effects Associated with Covariates Before and After Adjusting for Spatiotemporal Autocorrelation Figure
 
 ![figure showing covariate effects over time without adjusting for spatiotemporal autocorrelation in the top row and with adjustment for spatiotemporal autocorrelation in the bottom row](analysis/09_spatiotemporal_models/panel_figure.png)
 
@@ -305,7 +297,4 @@ restore the packages as they were used to conduct these analyses using
 - zip              [* -> 2.2.1]
 ```
 
-## Todo
-
-  - Population weight the county trends figure
-  - Write write write!
+Read the manuscript in its current form: [manuscript.pdf](manuscript/manuscript.pdf)

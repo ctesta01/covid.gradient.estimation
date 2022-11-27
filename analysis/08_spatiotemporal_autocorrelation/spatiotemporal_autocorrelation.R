@@ -149,8 +149,8 @@ ggsave("analysis/08_spatiotemporal_autocorrelation/seasonality_3.png", width=8, 
 county_map <- urbnmapr::get_urbn_map('counties', sf=TRUE)
 state_map <- urbnmapr::get_urbn_map('states', sf=TRUE)
 
-# filter for just values from january 2021
-df_jan2021 <- county_map %>% left_join(df %>% filter(date == "2021-01-01"), by = c('county_fips' = 'geoid'))
+# filter for just values from january 2022
+df_jan2022 <- county_map %>% left_join(df %>% filter(date == "2022-01-01"), by = c('county_fips' = 'geoid'))
 
 # plot the county map
 ggplot(county_map) +
@@ -177,12 +177,12 @@ ggplot(county_map) +
 ggsave(here("analysis/08_spatiotemporal_autocorrelation/county_neighboring_relations.png"), width = 10, height = 6)
 
 # use january 2021 covid mortality rates with no missing data
-df_jan2021_no_NAs <- df_jan2021 %>% filter(! is.na(crude_rate_per_100k_py))
-nb_q <- spdep::poly2nb(df_jan2021_no_NAs)
+df_jan2022_no_NAs <- df_jan2022 %>% filter(! is.na(crude_rate_per_100k_py))
+nb_q <- spdep::poly2nb(df_jan2022_no_NAs)
 
 # use moran's I approach to assess spatial autocorrelation
-mp <- moran.plot(x = df_jan2021_no_NAs$crude_rate_per_100k_py, listw = nb2listw(nb_q, zero.policy = TRUE), zero.policy = TRUE,
-                 labels=as.character(paste0(df_jan2021_no_NAs$county, ", ", df_jan2021_no_NAs$state_abbv)), pch=19)
+mp <- moran.plot(x = df_jan2022_no_NAs$crude_rate_per_100k_py, listw = nb2listw(nb_q, zero.policy = TRUE), zero.policy = TRUE,
+                 labels=as.character(paste0(df_jan2022_no_NAs$county, ", ", df_jan2022_no_NAs$state_abbv)), pch=19)
 
 mp %<>% mutate(
   quadrant = case_when(
@@ -203,7 +203,7 @@ ggplot(mp, aes(x=x, y=wx, color = quadrant)) + geom_point(alpha = .3) +
   geom_hline(yintercept=mean(mp$wx), lty=2) +
   geom_vline(xintercept=mean(mp$x), lty=2) + theme_minimal() +
   scale_x_log10() +
-  scale_y_log10() +
+  scale_y_log10(limits = c(1,3000)) +
   xlab("County COVID-19 Mortality Rate per 100,000 Person-Years") +
   ylab("Average of Neighboring Counties' COVID-19\nMortality Rate per 100,000 Person-Years") +
   annotate(
@@ -238,14 +238,21 @@ ggplot(mp, aes(x=x, y=wx, color = quadrant)) + geom_point(alpha = .3) +
 ggsave(here("analysis/08_spatiotemporal_autocorrelation/morans_plot.png"), width = 8, height = 6, bg = 'white')
 
 spdep::moran(
-  x = df_jan2021_no_NAs$crude_rate_per_100k_py,
+  x = df_jan2022_no_NAs$crude_rate_per_100k_py,
   listw = nb2listw(nb_q, zero.policy = TRUE),
   zero.policy = TRUE,
   n = nrow(df_jan2021_no_NAs),
   S0 = Szero(nb2listw(nb_q, zero.policy = TRUE))
 )
 
+plot_grid(
+  ggdraw() + draw_image(here("analysis/08_spatiotemporal_autocorrelation/county_neighboring_relations.png")),
+  ggdraw() + draw_image(here("analysis/08_spatiotemporal_autocorrelation/morans_plot.png")),
+  nrow = 1,
+  labels = "AUTO"
+)
 
+ggsave(here("analysis/08_spatiotemporal_autocorrelation/county_network_and_morans_plot.png"), width=10, height=3.5, bg='white')
 
 # using bam for spatial component, single timeframe ----------------------------------
 

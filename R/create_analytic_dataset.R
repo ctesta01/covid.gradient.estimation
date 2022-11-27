@@ -1,11 +1,6 @@
 
 #' Create Analytic Dataset
 #'
-#' @examples
-#' library(ggdist)
-#' df <- create_analytic_dataset()
-#'
-#'
 create_analytic_dataset <- function() {
 
   # load deaths and 2020 population size data
