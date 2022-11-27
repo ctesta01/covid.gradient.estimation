@@ -2,12 +2,12 @@
 
 ## Repository Overview
 
-This repository is home to the `covid.gradient.estimation` package which houses
+This repository is home to the `covid.gradient.estimation` R package which houses
 functions to clean, merge, and analyze data from a variety of sources on county-level
 COVID-19 outcomes, sociodemographic measures, and geography using generalized additive
 models (GAMs).
 
-This package can be installed by running:
+This package can be installed by running (in R):
 
 ```r
 install.packages("devtools")
@@ -30,8 +30,8 @@ R
 There are several datasets installed in the package in the `inst/` directory.
 Those include a cached copy of the county-level area based social metrics
 so that we don't have to query the American Community Survey API every time we 
-recreate our analytic dataset, the COVID-19 deaths from CDC WONDER and NYTimes,
-and the votes cast by county data from the MIT Election Lab.  
+recreate our analytic dataset, the COVID-19 deaths from NYTimes,
+and votes cast by county in the 2020 election from the MIT Election Lab.  
 
 ```
 inst
