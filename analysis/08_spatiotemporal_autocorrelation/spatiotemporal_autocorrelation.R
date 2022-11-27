@@ -265,9 +265,10 @@ model <- bam(
   data = df_for_bam
 )
 
-ggplot(df_spatial, aes(fill = sqrt(crude_rate_per_100k_py))) +
+ggplot(df_spatial, aes(fill = crude_rate_per_100k_py)) +
   geom_sf(size = 0) +
-  scale_fill_distiller(palette = 'Reds', direction = 1) +
+  # scale_fill_distiller(palette = 'Reds', direction = 1) +
+  scale_fill_viridis_c(option = 'turbo') +
   theme(legend.position = 'bottom')
 
 ggsave(here("analysis/08_spatiotemporal_autocorrelation/base_map.png"))
@@ -327,19 +328,21 @@ ggplot(df_spatial %>% sf::st_transform(crs = "EPSG:2163"), aes(fill = crude_rate
   scale_fill_viridis_c(
     option = 'turbo',
     direction = 1,
-    breaks = c(0, 100, 250, 500),
-    limits = c(0, 500),
-    oob = scales::squish
-  ) +
-  scale_fill_distiller(
-    palette = 'Reds',
-    breaks = c(0, 100, 250, 500),
-    direction = 1,
-    trans = scales::sqrt_trans(),
+    breaks = c(0, 100, 200, 300, 400, 500),
     limits = c(0, 500),
     oob = scales::squish,
     guide = my_triangle_colourbar()
+
   ) +
+  # scale_fill_distiller(
+  #   palette = 'Reds',
+  #   breaks = c(0, 100, 250, 500),
+  #   direction = 1,
+  #   trans = scales::sqrt_trans(),
+  #   limits = c(0, 500),
+  #   oob = scales::squish,
+  #   guide = my_triangle_colourbar()
+  # ) +
   labs(fill = stringr::str_wrap("Crude Mortality Rate per 100,000",10)) +
   theme_bw() +
   theme(legend.position = 'right')
@@ -348,20 +351,36 @@ ggsave("analysis/08_spatiotemporal_autocorrelation/crude_mortality_map_january20
 
 ggplot(df_spatial %>% sf::st_transform(crs = "EPSG:2163"), aes(fill = df_latlon$pred_rate)) +
   geom_sf(size = 0) +
-  scale_fill_distiller(
-    palette = 'Reds',
-    breaks = c(0, 100, 500, 1000),
+  scale_fill_viridis_c(
+    option = 'turbo',
     direction = 1,
-    trans = scales::sqrt_trans(),
+    breaks = c(0, 100, 200, 300, 400, 500),
     limits = c(0, 500),
-    oob = scales::squish
+    oob = scales::squish,
+    guide = my_triangle_colourbar()
   ) +
+  # scale_fill_distiller(
+  #   palette = 'Reds',
+  #   breaks = c(0, 100, 500, 1000),
+  #   direction = 1,
+  #   trans = scales::sqrt_trans(),
+  #   limits = c(0, 500),
+  #   oob = scales::squish
+  # ) +
   labs(fill = stringr::str_wrap("Spatially Smoothed Mortality Rate per 100,000", 10)) +
   theme_bw() +
   theme(legend.position = 'right')
 
 ggsave("analysis/08_spatiotemporal_autocorrelation/smoothed_mortality_map_january2022.png", width = 10, height = 6, bg = 'white')
 
+plot_grid(
+  ggdraw() + draw_image(here("analysis/08_spatiotemporal_autocorrelation/crude_mortality_map_january2022.png")),
+  ggdraw() + draw_image(here("analysis/08_spatiotemporal_autocorrelation/smoothed_mortality_map_january2022.png")),
+  nrow = 1,
+  labels = 'AUTO'
+  )
+
+ggsave(here("analysis/08_spatiotemporal_autocorrelation/side_by_side_crude_and_smoothed.png"), width = 10, height = 3.5, bg = 'white')
 
 # spatiotemporal smoothing ------------------------------------------------
 

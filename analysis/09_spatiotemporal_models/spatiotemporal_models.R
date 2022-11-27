@@ -141,13 +141,13 @@ for (i in 1:length(year_vec)) {
   ggsave(
     filename = here(
       paste0("analysis/09_spatiotemporal_models/animation/",
-      stringr::str_pad(
-        i,
-        side = 'left',
-        width = 2,
-        pad = '0'
-      ),
-      ".png"
+             stringr::str_pad(
+               i,
+               side = 'left',
+               width = 2,
+               pad = '0'
+             ),
+             ".png"
       )),
     plot = plt,
     width = 10, height = 6)
@@ -160,30 +160,30 @@ system("convert -delay 40 -loop 0 *.png spatiotemporal_animation.gif \( +clone -
 # create temporal panel figure
 
 visualize_gam_map(model, year_vec[5], month_vec[5], fulltitle = F) +
-visualize_gam_map(model, year_vec[6], month_vec[6], fulltitle = F) +
-visualize_gam_map(model, year_vec[7], month_vec[7], fulltitle = F) +
-visualize_gam_map(model, year_vec[8], month_vec[8], fulltitle = F) +
+  visualize_gam_map(model, year_vec[6], month_vec[6], fulltitle = F) +
+  visualize_gam_map(model, year_vec[7], month_vec[7], fulltitle = F) +
+  visualize_gam_map(model, year_vec[8], month_vec[8], fulltitle = F) +
 
-visualize_gam_map(model, year_vec[9], month_vec[9], fulltitle = F) +
-visualize_gam_map(model, year_vec[10], month_vec[10], fulltitle = F) +
-visualize_gam_map(model, year_vec[11], month_vec[11], fulltitle = F) +
-visualize_gam_map(model, year_vec[12], month_vec[12], fulltitle = F) +
+  visualize_gam_map(model, year_vec[9], month_vec[9], fulltitle = F) +
+  visualize_gam_map(model, year_vec[10], month_vec[10], fulltitle = F) +
+  visualize_gam_map(model, year_vec[11], month_vec[11], fulltitle = F) +
+  visualize_gam_map(model, year_vec[12], month_vec[12], fulltitle = F) +
 
-visualize_gam_map(model, year_vec[13], month_vec[13], fulltitle = F) +
-visualize_gam_map(model, year_vec[14], month_vec[14], fulltitle = F) +
-visualize_gam_map(model, year_vec[15], month_vec[15], fulltitle = F) +
-visualize_gam_map(model, year_vec[16], month_vec[16], fulltitle = F) +
+  visualize_gam_map(model, year_vec[13], month_vec[13], fulltitle = F) +
+  visualize_gam_map(model, year_vec[14], month_vec[14], fulltitle = F) +
+  visualize_gam_map(model, year_vec[15], month_vec[15], fulltitle = F) +
+  visualize_gam_map(model, year_vec[16], month_vec[16], fulltitle = F) +
   plot_layout(guides = 'collect', nrow = 3)
 
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/05.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/06.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/07.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/08.png")),
-  #
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/09.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/10.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/11.png")),
-  # ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/12.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/05.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/06.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/07.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/08.png")),
+#
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/09.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/10.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/11.png")),
+# ggdraw() + draw_image(here("analysis/09_spatiotemporal_models/animation/12.png")),
 
 
 ggsave(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"), width = 12, height = 7, bg = 'white')
@@ -223,7 +223,7 @@ dev.off()
 
 model <- bam(
   formula = deaths ~ te(latitude, longitude, date_int, d = c(2, 1)) +
-                          te(ICEraceinc, date_int, d = c(1,1)),
+    te(ICEraceinc, date_int, d = c(1,1)),
   offset = log(popsize/1e5/12),
   family = nb(),
   data = spatiotemporal_df

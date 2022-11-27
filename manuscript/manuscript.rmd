@@ -1,5 +1,5 @@
 ---
-title: Documenting Social, Geographic, and Economic Inequities in COVID-19 Mortality at the County Level in the US Using Generalized Additive Models
+title: Understanding Complex Patterns in Social, Geographic, and Economic Inequities in COVID-19 Mortality at the County Level in the US Using Generalized Additive Models
 author: 
   - name: "Christian Testa"
     institute: "1"
@@ -16,21 +16,22 @@ output:
     toc: false
     number_sections: false
 abstract: |
-  We present three types of applications of generalized additive models (GAMs) to
+  I present three types of applications of generalized additive models (GAMs) to
   COVID-19 mortality rates in the US for the purpose of advancing methods to
   document inequities with respect to which communities suffered disproportionate
-  COVID-19 mortality rates. First, GAMs can be used to describe the changing
+  COVID-19 mortality rates at specific times during the first three years of the 
+  pandemic. First, GAMs can be used to describe the changing
   relationship between COVID-19 mortality and county-level covariates
   (sociodemographic, economic, and political metrics) over time. Second, GAMs can
   be used to perform spatiotemporal smoothing that pools information over time and
-  space so that county level mortality rates that tend to be noisy due to small
+  space to address statistical instability due to small
   population counts or stochasticity can be summarized by a smooth, dynamic latent
   surface describing the mortality risk associated with geographic locations over
-  time. Third, estimation of the associations between county-level covariates and
-  COVID-19 mortality after controlling for spatiotemporal effects allow for the
-  distinguishing of what patterns in COVID-19 mortality were more plausibly due to
-  geography than variation in county-level covariates. Each of these approaches
-  provides a valuable approach and perspective to documenting inequities in
+  time. Third, estimation of COVID-19 mortality associations with county-level covariates
+  conditional on smooth spatiotemporal variation allows for more rigorous consideration
+  of how socio-environmental contexts and policies may have impacted COVID-19 mortality.
+  Each of these approaches
+  provides a valuable perspective to documenting inequities in
   COVID-19 mortality by addressing the question of which populations have suffered
   the worst burden of COVID-19 mortality taking into account the nonlinear
   spatial, temporal, and social patterning of disease.
@@ -103,9 +104,9 @@ COVID-19 mortality rates comparing socially advantaged and disadvantaged
 populations continues to mount. Eliminating inequities in health outcomes has
 been stated as a major policy goal of the Biden administration
 [@the_white_house_executive_2021; @the_white_house_advancing_2022], representing
-a revitalized focus on health justice and underlining the importance of adequate
-data reporting systems that measure the prevalent health inequities. To this
-end, we use generalized additive models (GAMs) as a flexible regression
+a revitalized commitment to health equity and underlining the importance of adequate
+data reporting systems that report timely estimates of prevalent health inequities. To this
+end, I use generalized additive models (GAMs) as a flexible regression
 framework to illustrate the evolving roles and relationships sociodemographic,
 geographic, and economic conditions have with respect to trends in COVID-19
 mortality. The code, data, and documentation necessary to reproduce the analyses
@@ -157,11 +158,7 @@ rates for the counties grouped within each of the nine U.S. Census Divisions
 The figure summarizes each division's median mortality rates
 weighted by county population size. Quantile ranges are included to illustrate
 the range of mortality rates observed, again weighted by county population size.
-Weighting based on county population size is used as opposed to equal weighting
-for calculating the median and quantile ranges so that in divisions where low
-population counties predominate, mortality rate estimates that are noisy due to
-small population counts are not weighted equally to more reliable mortality rate
-estimates from larger population counties. Notably, the mortality associated
+Notably, the mortality associated
 with the early surge of cases starting in NYC and spreading through New York,
 New Jersey, and Massachusetts is visible in the Middle Atlantic and New England
 division figures. The figure also illustrates how the first peak in the
@@ -212,12 +209,17 @@ yet more reasons why COVID-19 threatened to worsen an already inequitable
 healthcare landscape in the US: those who reside in prisons and jails,
 immigrants and undocumented people, people with disabilities, and people
 experiencing homeless all face additional challenges in seeking and getting the
-healthcare they deserve [@okonkwo_covid-19_2021]. It's not just a hypothetical 
-that those with more structurally enfranchised privileges have been more able to
-mitigate their risk of negative health outcomes associated with COVID-19 
-— during February 1 to April 1, 2020, New York City residents who lived in more affluent 
-neighborhoods were more likely to have left the city, while New York City residents
-from more Black and Hispanic neighborhoods were more likely to continue working [@coven_disparities_2020].
+healthcare they deserve [@okonkwo_covid-19_2021]. Despite stay-at-home orders
+that were prevalent in many states [@moreland_timing_2020], workers functioning in 
+capacities essential to the functioning of critical infrastructure operations (later
+termed "essential workers") were exposed to heightened risk of COVID-19 transmission 
+[@national_conference_of_state_legislatures_covid-19_2021; @wei_risk_2022; @national_bureau_of_economic_research_measuring_2021; @the_lancet_plight_2020; @hanage_covid-19_2020].
+It's not just a hypothetical that those with more structurally enfranchised
+privileges have been more able to mitigate their risk of negative health
+outcomes associated with COVID-19 — during February 1 to April 1, 2020, New York
+City residents who lived in more affluent neighborhoods were more likely to have
+left the city, while New York City residents from more Black and Hispanic
+neighborhoods were more likely to continue working [@coven_disparities_2020].
 
 > Contrary to the oft used phrase that the ‘virus does not discriminate’, the
 data presented here suggest that this virus, as many other infectious diseases,
@@ -470,11 +472,39 @@ basis dimensions is used indicate that each of the `date`, `ICEraceinc`, and
 that a one unit difference in one variable is comparable to a one unit difference
 in another variable. 
 
-```{r two-variables-over-time, fig.cap="The changing interacted effect of the ICE for racialized economic segregation and age over time. A) May 2020, B) November 2020, C) May 2021, D) October 2021, E) February 2022, F) August 2022. An animated version is available online at "}
+```{r two-variables-over-time, fig.cap="The changing interacted effect of the ICE for racialized economic segregation and age over time. A) May 2020, B) November 2020, C) May 2021, D) October 2021, E) February 2022, F) August 2022. An animated version is available online at [https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/readme.md](https://github.com/ctesta01/covid.gradient.estimation/blob/main/analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/readme.md)"}
 knitr::include_graphics(here("analysis/05_two_variables_at_a_time/animation_ICEraceinc_age/panel_figure.png"))
 ```
 
-## Evaluating Spatial and Temporal Autocorrelation
+## Application 2: Spatiotemporal Smoothing
+
+By fitting GAMs with a tensor-product smoothing term on latitude, longitude, and
+time we can estimate a spatiotemporally smoothed trend in COVID-19 mortality. To
+do this, the GAM is constructed similarly as in Application 1 but with the
+formula specified as `deaths ~ te(latitude, longitude, time, d=c(2,1))` where
+`d=c(2,1)` indicates that `latitude` and `longitude` share the same dimensions
+(i.e., both are spatial and in units of degrees) while the `time` data are in separate
+units. 
+
+Using GAMs to present spatiotemporally smoothed estimates of COVID-19 mortality
+allows for the synthesis of trends over time. Whereas the raw rates of COVID-19
+mortality are noisy due to 72% of the land area in the US being classified as
+rural and low population density, the spatiotemporally smoothed GAM estimates
+use population weighting via the offset specified to estimate a latent surface
+that represents localized mortality rate averages in spatial coordinates and in
+time. 
+
+```{r crude-vs-smoothed, fig.cap = "Comparison of crude vs. smoothed mortality rates. A) Crude mortality rates per 100,000 person-years in January 2022. B) Smoothed mortality rates from a GAM applied to mortality rates from January 2022."}
+knitr::include_graphics(here("analysis/08_spatiotemporal_autocorrelation/side_by_side_crude_and_smoothed.png"))
+```
+
+```{r spatiotemporal-panel-figure, fig.cap = "Spatiotemporally smoothed COVID-19 mortality estimates from a GAM fit to data from March 2020-August 2022. Panels show months selected to highlight the changing spatial patterns of COVID-19 mortality risk over time. An animated version is available online at []()"}
+knitr::include_graphics(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"))
+```
+
+## Application 3: Estimating Covariate Effects Adjusted for Spatiotemporal Autocorrelation
+
+### Evaluating Spatial and Temporal Autocorrelation
 
 ```{r figure county neighboring graph, fig.cap = "A) The spatial neighbor graph for counties in the US. In this graph, county centroids are connected if the two counties are adjacent to one another (i.e., share a boundary). This and similar graphs that represent neighbor relationships or geographic proximity are often used in modeling contexts to create spatial weights that account for which regions help to explain a given region's observed data.", fig.show='hold', out.width = '50%', fig.env = "figure*"} 
 desired_caption <- 
@@ -501,9 +531,6 @@ We used GAMs to describe the following:
 Additionally, as sensitivity analyses, random forest models were fit to compare
 with the coefficient estimates from the GAMs.
 
-```{r figure 5, fig.cap = ""}
-knitr::include_graphics(here("analysis/09_spatiotemporal_models/temporal_panel_figure.png"))
-```
 
 ```{r figure 6, fig.cap = ""}
 knitr::include_graphics(here("analysis/09_spatiotemporal_models/panel_figure.png"))
