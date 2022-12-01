@@ -258,7 +258,7 @@ a generalized additive model could look like
 $$ g(\mu_i) = \mathbf A_i \mathbf \theta + f_1(x_{i1}) + f_2(x_{i2}) + f_3(x_{i3}, x_{i4}) + \dots$$
 where the expected value of the outcome is given as $\mu_i \equiv \mathbb E(Y_i)$, 
 $\mathbf A_i$ is a row of the model matrix 
-for any strictly non-parametric model components, $\mathbf \theta$ is the corresponding
+for any strictly parametric model components, $\mathbf \theta$ is the corresponding
 parameter vector, and the $f_j$ are smooth functions of the covariates $x_k$ [@wood_generalized_2017]. 
 
 ```{r gam-demo-figure, fig.cap = "A demonstration of fitting regression models using B-spline basis functions. Part A. shows the simulated dataset. Part B. shows the B-spline basis functions. Part C. shows the weighting of the B-spline basis functions and their weighted sum with an intercept added to create the regression model fit to the data."}
